@@ -1,0 +1,9 @@
+[global]
+name=rdm_r_nobuf
+blocksize=4K
+ioengine=sync
+direct=1
+rw=randread
+
+[job1]
+runtime=300

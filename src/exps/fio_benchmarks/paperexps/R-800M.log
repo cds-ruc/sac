@@ -1,0 +1,35 @@
+rdm_w_nobuf: (g=0): rw=randwrite, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
+rdm_w_nobuf: (g=1): rw=randwrite, bs=4K-4K/4K-4K/4K-4K, ioengine=sync, iodepth=1
+fio-2.1.10
+Starting 2 processes
+
+fio: terminating on signal 2
+
+rdm_w_nobuf: (groupid=0, jobs=1): err= 0: pid=20705: Fri Jul  5 10:44:56 2019
+  write: io=733616KB, bw=5511.8KB/s, iops=1377, runt=133100msec
+    clat (usec): min=66, max=2404.6K, avg=699.91, stdev=10594.64
+     lat (usec): min=66, max=2404.6K, avg=700.30, stdev=10594.66
+    clat percentiles (usec):
+     |  1.00th=[   84],  5.00th=[   94], 10.00th=[   98], 20.00th=[  100],
+     | 30.00th=[  101], 40.00th=[  102], 50.00th=[  104], 60.00th=[  105],
+     | 70.00th=[  109], 80.00th=[  133], 90.00th=[  147], 95.00th=[  181],
+     | 99.00th=[13248], 99.50th=[23168], 99.90th=[148480], 99.95th=[185344],
+     | 99.99th=[236544]
+    bw (KB  /s): min=    1, max=15016, per=100.00%, avg=6249.88, stdev=6556.50
+    lat (usec) : 100=16.30%, 250=80.57%, 500=1.08%, 750=0.69%, 1000=0.02%
+    lat (msec) : 2=0.02%, 10=0.01%, 20=0.67%, 50=0.37%, 100=0.01%
+    lat (msec) : 250=0.25%, 500=0.01%, 2000=0.01%, >=2000=0.01%
+  cpu          : usr=0.76%, sys=2.67%, ctx=183416, majf=0, minf=7
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=0/w=183404/d=0, short=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: io=733616KB, aggrb=5511KB/s, minb=5511KB/s, maxb=5511KB/s, mint=133100msec, maxt=133100msec
+
+Run status group 1 (all jobs):
+
+Disk stats (read/write):
+  sda: ios=39/183403, merge=0/0, ticks=4051/124978, in_queue=129450, util=97.32%

@@ -1,0 +1,12 @@
+[global]
+name=rdm_w_nobuf
+filename=/dev/zero
+size=1G
+blocksize=4K
+ioengine=sync
+direct=1
+rw=randread
+write_iolog=./iolog.log
+[job1]
+runtime=100
+time_based

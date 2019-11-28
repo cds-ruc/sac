@@ -1,0 +1,11 @@
+[global]
+name=seq_w_nobuf
+blocksize=4K
+ioengine=sync
+direct=1
+rw=read
+
+[job1]
+size=5000G
+offset=2000G
+runtime=50

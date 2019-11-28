@@ -1,0 +1,542 @@
+Simulator Device: fifo part=5, smr part=6
+init_Strategy: 0, init_table: 0, init_desp: 0, inti_Stt: 0, init_TSwitcher: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+totalreq:0, readreq:0, wrtreq:0, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:0
+current run time: 0
+ totalreqNum:5953
+ read_req_count: 0
+ write_req_count: 5953
+ hit num:9520
+ hitnum_r:0
+ hitnum_w:9520
+ read_ssd_blocks:64
+ flush_ssd_blocks:59530
+ read_hdd_blocks:0
+ flush_hdd_blocks:64
+ flush_clean_blocks:0
+ total run time (s): 0.000000
+ time_read_ssd : 0.000035
+ time_write_ssd : 0.000010
+ time_read_smr : 0.000000
+ time_write_smr : 0.000036
+ Batch flush HDD time:0
+ Cache Proportion(R/W): [0/49946]
+ wt_hit_rd: 0
+ rd_hit_wt: 0
+totalreq:50000, readreq:0, wrtreq:50000, hit:9520, readhit:0, flush_ssd_blk:440470 flush_hdd_blk:440512
+current run time: 2
+totalreq:100000, readreq:0, wrtreq:100000, hit:9520, readhit:0, flush_ssd_blk:940470 flush_hdd_blk:940480
+current run time: 3
+totalreq:150000, readreq:0, wrtreq:150000, hit:31250, readhit:0, flush_ssd_blk:1440470 flush_hdd_blk:1418752
+current run time: 6
+totalreq:200000, readreq:0, wrtreq:200000, hit:270630, readhit:0, flush_ssd_blk:1940470 flush_hdd_blk:1679424
+current run time: 11
+totalreq:250000, readreq:0, wrtreq:250000, hit:398350, readhit:0, flush_ssd_blk:2440470 flush_hdd_blk:2051712
+current run time: 17
+totalreq:300000, readreq:0, wrtreq:300000, hit:438802, readhit:0, flush_ssd_blk:2940470 flush_hdd_blk:2511232
+current run time: 24
+totalreq:350000, readreq:0, wrtreq:350000, hit:439212, readhit:0, flush_ssd_blk:3440470 flush_hdd_blk:3010816
+current run time: 31
+totalreq:400000, readreq:0, wrtreq:400000, hit:439212, readhit:0, flush_ssd_blk:3940470 flush_hdd_blk:3510848
+current run time: 37
+totalreq:450000, readreq:0, wrtreq:450000, hit:439212, readhit:0, flush_ssd_blk:4440470 flush_hdd_blk:4010816
+current run time: 42
+totalreq:500000, readreq:0, wrtreq:500000, hit:447552, readhit:0, flush_ssd_blk:4940470 flush_hdd_blk:4502464
+current run time: 48
+totalreq:550000, readreq:0, wrtreq:550000, hit:451562, readhit:0, flush_ssd_blk:5440470 flush_hdd_blk:4998464
+current run time: 57
+totalreq:600000, readreq:0, wrtreq:600000, hit:451612, readhit:0, flush_ssd_blk:5940470 flush_hdd_blk:5498432
+current run time: 64
+totalreq:650000, readreq:0, wrtreq:650000, hit:472222, readhit:0, flush_ssd_blk:6440470 flush_hdd_blk:5977792
+current run time: 67
+totalreq:700000, readreq:0, wrtreq:700000, hit:603052, readhit:0, flush_ssd_blk:6940470 flush_hdd_blk:6347008
+current run time: 74
+totalreq:750000, readreq:0, wrtreq:750000, hit:714522, readhit:0, flush_ssd_blk:7440470 flush_hdd_blk:6735488
+current run time: 82
+totalreq:800000, readreq:0, wrtreq:800000, hit:732512, readhit:0, flush_ssd_blk:7940470 flush_hdd_blk:7217536
+current run time: 89
+totalreq:850000, readreq:0, wrtreq:850000, hit:746302, readhit:0, flush_ssd_blk:8440470 flush_hdd_blk:7703744
+current run time: 96
+totalreq:900000, readreq:0, wrtreq:900000, hit:774372, readhit:0, flush_ssd_blk:8940470 flush_hdd_blk:8175680
+current run time: 104
+totalreq:950000, readreq:0, wrtreq:950000, hit:787480, readhit:0, flush_ssd_blk:9440470 flush_hdd_blk:8662528
+current run time: 111
+totalreq:1000000, readreq:0, wrtreq:1000000, hit:848870, readhit:0, flush_ssd_blk:9940470 flush_hdd_blk:9101184
+current run time: 118
+totalreq:1050000, readreq:0, wrtreq:1050000, hit:863570, readhit:0, flush_ssd_blk:10440470 flush_hdd_blk:9586432
+current run time: 126
+totalreq:1100000, readreq:0, wrtreq:1100000, hit:878954, readhit:0, flush_ssd_blk:10940470 flush_hdd_blk:10071104
+current run time: 134
+totalreq:1150000, readreq:0, wrtreq:1150000, hit:912364, readhit:0, flush_ssd_blk:11440470 flush_hdd_blk:10537664
+current run time: 141
+totalreq:1200000, readreq:0, wrtreq:1200000, hit:919342, readhit:0, flush_ssd_blk:11940470 flush_hdd_blk:11030720
+current run time: 149
+totalreq:1250000, readreq:0, wrtreq:1250000, hit:949942, readhit:0, flush_ssd_blk:12440470 flush_hdd_blk:11500096
+current run time: 156
+totalreq:1300000, readreq:0, wrtreq:1300000, hit:959092, readhit:0, flush_ssd_blk:12940470 flush_hdd_blk:11990912
+current run time: 163
+totalreq:1350000, readreq:0, wrtreq:1350000, hit:961412, readhit:0, flush_ssd_blk:13440470 flush_hdd_blk:12488640
+current run time: 169
+totalreq:1400000, readreq:0, wrtreq:1400000, hit:975562, readhit:0, flush_ssd_blk:13940470 flush_hdd_blk:12974464
+current run time: 175
+totalreq:1450000, readreq:0, wrtreq:1450000, hit:988894, readhit:0, flush_ssd_blk:14440470 flush_hdd_blk:13461120
+current run time: 185
+totalreq:1500000, readreq:0, wrtreq:1500000, hit:988894, readhit:0, flush_ssd_blk:14940470 flush_hdd_blk:13961152
+current run time: 190
+totalreq:1550000, readreq:0, wrtreq:1550000, hit:1017634, readhit:0, flush_ssd_blk:15440470 flush_hdd_blk:14432384
+current run time: 197
+totalreq:1600000, readreq:0, wrtreq:1600000, hit:1044784, readhit:0, flush_ssd_blk:15940470 flush_hdd_blk:14905216
+current run time: 205
+totalreq:1650000, readreq:0, wrtreq:1650000, hit:1065904, readhit:0, flush_ssd_blk:16440470 flush_hdd_blk:15384128
+current run time: 211
+totalreq:1700000, readreq:0, wrtreq:1700000, hit:1079004, readhit:0, flush_ssd_blk:16940470 flush_hdd_blk:15871040
+current run time: 220
+totalreq:1750000, readreq:0, wrtreq:1750000, hit:1129624, readhit:0, flush_ssd_blk:17440470 flush_hdd_blk:16320384
+current run time: 227
+totalreq:1800000, readreq:0, wrtreq:1800000, hit:1163194, readhit:0, flush_ssd_blk:17940470 flush_hdd_blk:16786816
+current run time: 235
+totalreq:1850000, readreq:0, wrtreq:1850000, hit:1170584, readhit:0, flush_ssd_blk:18440470 flush_hdd_blk:17279424
+current run time: 242
+totalreq:1900000, readreq:0, wrtreq:1900000, hit:1182094, readhit:0, flush_ssd_blk:18940470 flush_hdd_blk:17767936
+current run time: 250
+totalreq:1950000, readreq:0, wrtreq:1950000, hit:1182094, readhit:0, flush_ssd_blk:19440470 flush_hdd_blk:18267968
+current run time: 259
+totalreq:2000000, readreq:0, wrtreq:2000000, hit:1182294, readhit:0, flush_ssd_blk:19940470 flush_hdd_blk:18767744
+current run time: 266
+totalreq:2050000, readreq:0, wrtreq:2050000, hit:1182314, readhit:0, flush_ssd_blk:20440470 flush_hdd_blk:19267712
+current run time: 274
+totalreq:2100000, readreq:0, wrtreq:2100000, hit:1182564, readhit:0, flush_ssd_blk:20940470 flush_hdd_blk:19767488
+current run time: 281
+totalreq:2150000, readreq:0, wrtreq:2150000, hit:1191084, readhit:0, flush_ssd_blk:21440470 flush_hdd_blk:20258944
+current run time: 287
+totalreq:2200000, readreq:0, wrtreq:2200000, hit:1192744, readhit:0, flush_ssd_blk:21940470 flush_hdd_blk:20757312
+current run time: 296
+totalreq:2250000, readreq:0, wrtreq:2250000, hit:1207908, readhit:0, flush_ssd_blk:22440470 flush_hdd_blk:21242112
+current run time: 302
+totalreq:2300000, readreq:0, wrtreq:2300000, hit:1229258, readhit:0, flush_ssd_blk:22940470 flush_hdd_blk:21720768
+current run time: 309
+totalreq:2350000, readreq:0, wrtreq:2350000, hit:1229738, readhit:0, flush_ssd_blk:23440470 flush_hdd_blk:22220288
+current run time: 318
+totalreq:2400000, readreq:0, wrtreq:2400000, hit:1229888, readhit:0, flush_ssd_blk:23940470 flush_hdd_blk:22720128
+current run time: 328
+totalreq:2450000, readreq:0, wrtreq:2450000, hit:1229888, readhit:0, flush_ssd_blk:24440470 flush_hdd_blk:23220160
+current run time: 332
+totalreq:2500000, readreq:0, wrtreq:2500000, hit:1230048, readhit:0, flush_ssd_blk:24940470 flush_hdd_blk:23720000
+current run time: 339
+totalreq:2550000, readreq:0, wrtreq:2550000, hit:1233140, readhit:0, flush_ssd_blk:25440470 flush_hdd_blk:24216896
+current run time: 345
+totalreq:2600000, readreq:0, wrtreq:2600000, hit:1233290, readhit:0, flush_ssd_blk:25940470 flush_hdd_blk:24716736
+current run time: 355
+totalreq:2650000, readreq:0, wrtreq:2650000, hit:1236150, readhit:0, flush_ssd_blk:26440470 flush_hdd_blk:25213888
+current run time: 359
+totalreq:2700000, readreq:0, wrtreq:2700000, hit:1236340, readhit:0, flush_ssd_blk:26940470 flush_hdd_blk:25713664
+current run time: 368
+totalreq:2750000, readreq:0, wrtreq:2750000, hit:1236360, readhit:0, flush_ssd_blk:27440470 flush_hdd_blk:26213696
+current run time: 374
+totalreq:2800000, readreq:0, wrtreq:2800000, hit:1236490, readhit:0, flush_ssd_blk:27940470 flush_hdd_blk:26713536
+current run time: 382
+totalreq:2850000, readreq:0, wrtreq:2850000, hit:1236490, readhit:0, flush_ssd_blk:28440470 flush_hdd_blk:27213568
+current run time: 388
+totalreq:2900000, readreq:0, wrtreq:2900000, hit:1250580, readhit:0, flush_ssd_blk:28940470 flush_hdd_blk:27699456
+current run time: 396
+totalreq:2950000, readreq:0, wrtreq:2950000, hit:1266720, readhit:0, flush_ssd_blk:29440470 flush_hdd_blk:28183296
+current run time: 402
+totalreq:3000000, readreq:0, wrtreq:3000000, hit:1271370, readhit:0, flush_ssd_blk:29940470 flush_hdd_blk:28678656
+current run time: 410
+totalreq:3050000, readreq:0, wrtreq:3050000, hit:1271510, readhit:0, flush_ssd_blk:30440470 flush_hdd_blk:29178496
+current run time: 418
+totalreq:3100000, readreq:0, wrtreq:3100000, hit:1299120, readhit:0, flush_ssd_blk:30940470 flush_hdd_blk:29650880
+current run time: 424
+totalreq:3150000, readreq:0, wrtreq:3150000, hit:1309828, readhit:0, flush_ssd_blk:31440470 flush_hdd_blk:30140224
+current run time: 432
+totalreq:3200000, readreq:0, wrtreq:3200000, hit:1327858, readhit:0, flush_ssd_blk:31940470 flush_hdd_blk:30622144
+current run time: 438
+totalreq:3250000, readreq:0, wrtreq:3250000, hit:1431116, readhit:0, flush_ssd_blk:32440470 flush_hdd_blk:31018944
+current run time: 444
+totalreq:3300000, readreq:0, wrtreq:3300000, hit:1467278, readhit:0, flush_ssd_blk:32940470 flush_hdd_blk:31482752
+current run time: 453
+totalreq:3350000, readreq:0, wrtreq:3350000, hit:1467448, readhit:0, flush_ssd_blk:33440470 flush_hdd_blk:31982592
+current run time: 464
+totalreq:3400000, readreq:0, wrtreq:3400000, hit:1468518, readhit:0, flush_ssd_blk:33940470 flush_hdd_blk:32481536
+current run time: 471
+totalreq:3450000, readreq:0, wrtreq:3450000, hit:1468868, readhit:0, flush_ssd_blk:34440470 flush_hdd_blk:32981184
+current run time: 479
+totalreq:3500000, readreq:0, wrtreq:3500000, hit:1468868, readhit:0, flush_ssd_blk:34940470 flush_hdd_blk:33481152
+current run time: 486
+totalreq:3550000, readreq:0, wrtreq:3550000, hit:1469028, readhit:0, flush_ssd_blk:35440470 flush_hdd_blk:33980992
+current run time: 492
+totalreq:3600000, readreq:0, wrtreq:3600000, hit:1492958, readhit:0, flush_ssd_blk:35940470 flush_hdd_blk:34457088
+current run time: 502
+totalreq:3650000, readreq:0, wrtreq:3650000, hit:1511186, readhit:0, flush_ssd_blk:36440470 flush_hdd_blk:34938816
+current run time: 509
+totalreq:3700000, readreq:0, wrtreq:3700000, hit:1511186, readhit:0, flush_ssd_blk:36940470 flush_hdd_blk:35438848
+current run time: 514
+totalreq:3750000, readreq:0, wrtreq:3750000, hit:1511506, readhit:0, flush_ssd_blk:37440470 flush_hdd_blk:35938496
+current run time: 522
+totalreq:3800000, readreq:0, wrtreq:3800000, hit:1520366, readhit:0, flush_ssd_blk:37940470 flush_hdd_blk:36429696
+current run time: 529
+totalreq:3850000, readreq:0, wrtreq:3850000, hit:1521126, readhit:0, flush_ssd_blk:38440470 flush_hdd_blk:36928896
+current run time: 535
+totalreq:3900000, readreq:0, wrtreq:3900000, hit:1521126, readhit:0, flush_ssd_blk:38940470 flush_hdd_blk:37428928
+current run time: 541
+totalreq:3950000, readreq:0, wrtreq:3950000, hit:1521126, readhit:0, flush_ssd_blk:39440470 flush_hdd_blk:37928896
+current run time: 546
+totalreq:4000000, readreq:0, wrtreq:4000000, hit:1543316, readhit:0, flush_ssd_blk:39940470 flush_hdd_blk:38406720
+current run time: 553
+totalreq:4050000, readreq:0, wrtreq:4050000, hit:1544676, readhit:0, flush_ssd_blk:40440470 flush_hdd_blk:38905344
+current run time: 561
+totalreq:4100000, readreq:0, wrtreq:4100000, hit:1550206, readhit:0, flush_ssd_blk:40940470 flush_hdd_blk:39399808
+current run time: 569
+totalreq:4150000, readreq:0, wrtreq:4150000, hit:1573976, readhit:0, flush_ssd_blk:41440470 flush_hdd_blk:39876032
+current run time: 576
+totalreq:4200000, readreq:0, wrtreq:4200000, hit:1578516, readhit:0, flush_ssd_blk:41940470 flush_hdd_blk:40371520
+current run time: 583
+totalreq:4250000, readreq:0, wrtreq:4250000, hit:1582976, readhit:0, flush_ssd_blk:42440470 flush_hdd_blk:40867072
+current run time: 591
+totalreq:4300000, readreq:0, wrtreq:4300000, hit:1604046, readhit:0, flush_ssd_blk:42940470 flush_hdd_blk:41345984
+current run time: 599
+totalreq:4350000, readreq:0, wrtreq:4350000, hit:1604046, readhit:0, flush_ssd_blk:43440470 flush_hdd_blk:41846016
+current run time: 604
+totalreq:4400000, readreq:0, wrtreq:4400000, hit:1605276, readhit:0, flush_ssd_blk:43940470 flush_hdd_blk:42344768
+current run time: 612
+totalreq:4450000, readreq:0, wrtreq:4450000, hit:1605666, readhit:0, flush_ssd_blk:44440470 flush_hdd_blk:42844352
+current run time: 617
+totalreq:4500000, readreq:0, wrtreq:4500000, hit:1607796, readhit:0, flush_ssd_blk:44940470 flush_hdd_blk:43342208
+current run time: 623
+totalreq:4550000, readreq:0, wrtreq:4550000, hit:1607796, readhit:0, flush_ssd_blk:45440470 flush_hdd_blk:43842240
+current run time: 631
+totalreq:4600000, readreq:0, wrtreq:4600000, hit:1608166, readhit:0, flush_ssd_blk:45940470 flush_hdd_blk:44341888
+current run time: 636
+totalreq:4650000, readreq:0, wrtreq:4650000, hit:1610636, readhit:0, flush_ssd_blk:46440470 flush_hdd_blk:44839424
+current run time: 643
+totalreq:4700000, readreq:0, wrtreq:4700000, hit:1616296, readhit:0, flush_ssd_blk:46940470 flush_hdd_blk:45333760
+current run time: 651
+totalreq:4750000, readreq:0, wrtreq:4750000, hit:1780826, readhit:0, flush_ssd_blk:47440470 flush_hdd_blk:45669184
+current run time: 655
+totalreq:4800000, readreq:0, wrtreq:4800000, hit:2042136, readhit:0, flush_ssd_blk:47940470 flush_hdd_blk:45907904
+current run time: 660
+totalreq:4850000, readreq:0, wrtreq:4850000, hit:2264716, readhit:0, flush_ssd_blk:48440470 flush_hdd_blk:46185344
+current run time: 667
+totalreq:4900000, readreq:0, wrtreq:4900000, hit:2391936, readhit:0, flush_ssd_blk:48940470 flush_hdd_blk:46558080
+current run time: 675
+totalreq:4950000, readreq:0, wrtreq:4950000, hit:2566524, readhit:0, flush_ssd_blk:49440470 flush_hdd_blk:46883520
+current run time: 682
+totalreq:5000000, readreq:0, wrtreq:5000000, hit:2820344, readhit:0, flush_ssd_blk:49940470 flush_hdd_blk:47129664
+current run time: 687
+totalreq:5050000, readreq:0, wrtreq:5050000, hit:2952524, readhit:0, flush_ssd_blk:50440470 flush_hdd_blk:47497536
+current run time: 694
+totalreq:5100000, readreq:0, wrtreq:5100000, hit:2981894, readhit:0, flush_ssd_blk:50940470 flush_hdd_blk:47968128
+current run time: 702
+totalreq:5150000, readreq:0, wrtreq:5150000, hit:2982054, readhit:0, flush_ssd_blk:51440470 flush_hdd_blk:48467968
+current run time: 711
+totalreq:5200000, readreq:0, wrtreq:5200000, hit:2982064, readhit:0, flush_ssd_blk:51940470 flush_hdd_blk:48967936
+current run time: 718
+totalreq:5250000, readreq:0, wrtreq:5250000, hit:2983084, readhit:0, flush_ssd_blk:52440470 flush_hdd_blk:49466944
+current run time: 724
+totalreq:5300000, readreq:0, wrtreq:5300000, hit:2994984, readhit:0, flush_ssd_blk:52940470 flush_hdd_blk:49955072
+current run time: 731
+totalreq:5350000, readreq:0, wrtreq:5350000, hit:3001094, readhit:0, flush_ssd_blk:53440470 flush_hdd_blk:50448960
+current run time: 738
+totalreq:5400000, readreq:0, wrtreq:5400000, hit:3019244, readhit:0, flush_ssd_blk:53940470 flush_hdd_blk:50930816
+current run time: 744
+totalreq:5450000, readreq:0, wrtreq:5450000, hit:3120686, readhit:0, flush_ssd_blk:54440470 flush_hdd_blk:51329344
+current run time: 751
+totalreq:5500000, readreq:0, wrtreq:5500000, hit:3231746, readhit:0, flush_ssd_blk:54940470 flush_hdd_blk:51718272
+current run time: 760
+totalreq:5550000, readreq:0, wrtreq:5550000, hit:3290046, readhit:0, flush_ssd_blk:55440470 flush_hdd_blk:52160000
+current run time: 767
+totalreq:5600000, readreq:0, wrtreq:5600000, hit:3304776, readhit:0, flush_ssd_blk:55940470 flush_hdd_blk:52645248
+current run time: 777
+totalreq:5650000, readreq:0, wrtreq:5650000, hit:3305266, readhit:0, flush_ssd_blk:56440470 flush_hdd_blk:53144768
+current run time: 784
+totalreq:5700000, readreq:0, wrtreq:5700000, hit:3305296, readhit:0, flush_ssd_blk:56940470 flush_hdd_blk:53644736
+current run time: 791
+totalreq:5750000, readreq:0, wrtreq:5750000, hit:3305446, readhit:0, flush_ssd_blk:57440470 flush_hdd_blk:54144576
+current run time: 796
+totalreq:5800000, readreq:0, wrtreq:5800000, hit:3305726, readhit:0, flush_ssd_blk:57940470 flush_hdd_blk:54644288
+current run time: 806
+totalreq:5850000, readreq:0, wrtreq:5850000, hit:3308446, readhit:0, flush_ssd_blk:58440470 flush_hdd_blk:55141568
+current run time: 814
+totalreq:5900000, readreq:0, wrtreq:5900000, hit:3308576, readhit:0, flush_ssd_blk:58940470 flush_hdd_blk:55641472
+current run time: 822
+totalreq:5950000, readreq:0, wrtreq:5950000, hit:3313636, readhit:0, flush_ssd_blk:59440470 flush_hdd_blk:56136384
+current run time: 831
+totalreq:6000000, readreq:0, wrtreq:6000000, hit:3321336, readhit:0, flush_ssd_blk:59940470 flush_hdd_blk:56628672
+current run time: 838
+totalreq:6050000, readreq:0, wrtreq:6050000, hit:3326886, readhit:0, flush_ssd_blk:60440470 flush_hdd_blk:57123136
+current run time: 846
+totalreq:6100000, readreq:0, wrtreq:6100000, hit:3333396, readhit:0, flush_ssd_blk:60940470 flush_hdd_blk:57616640
+current run time: 854
+totalreq:6150000, readreq:0, wrtreq:6150000, hit:3364236, readhit:0, flush_ssd_blk:61440470 flush_hdd_blk:58085824
+current run time: 861
+totalreq:6200000, readreq:0, wrtreq:6200000, hit:3382806, readhit:0, flush_ssd_blk:61940470 flush_hdd_blk:58567232
+current run time: 870
+totalreq:6250000, readreq:0, wrtreq:6250000, hit:3408616, readhit:0, flush_ssd_blk:62440470 flush_hdd_blk:59041408
+current run time: 877
+totalreq:6300000, readreq:0, wrtreq:6300000, hit:3409056, readhit:0, flush_ssd_blk:62940470 flush_hdd_blk:59540992
+current run time: 884
+totalreq:6350000, readreq:0, wrtreq:6350000, hit:3468546, readhit:0, flush_ssd_blk:63440470 flush_hdd_blk:59981504
+current run time: 890
+totalreq:6400000, readreq:0, wrtreq:6400000, hit:3468926, readhit:0, flush_ssd_blk:63940470 flush_hdd_blk:60481088
+current run time: 898
+totalreq:6450000, readreq:0, wrtreq:6450000, hit:3469066, readhit:0, flush_ssd_blk:64440470 flush_hdd_blk:60980992
+current run time: 906
+totalreq:6500000, readreq:0, wrtreq:6500000, hit:3519736, readhit:0, flush_ssd_blk:64940470 flush_hdd_blk:61430272
+current run time: 912
+totalreq:6550000, readreq:0, wrtreq:6550000, hit:3521276, readhit:0, flush_ssd_blk:65440470 flush_hdd_blk:61928768
+current run time: 920
+totalreq:6600000, readreq:0, wrtreq:6600000, hit:3543686, readhit:0, flush_ssd_blk:65940470 flush_hdd_blk:62406336
+current run time: 927
+totalreq:6650000, readreq:0, wrtreq:6650000, hit:3543686, readhit:0, flush_ssd_blk:66440470 flush_hdd_blk:62906368
+current run time: 934
+totalreq:6700000, readreq:0, wrtreq:6700000, hit:3571646, readhit:0, flush_ssd_blk:66940470 flush_hdd_blk:63378368
+current run time: 942
+totalreq:6750000, readreq:0, wrtreq:6750000, hit:3610386, readhit:0, flush_ssd_blk:67440470 flush_hdd_blk:63839616
+current run time: 951
+totalreq:6800000, readreq:0, wrtreq:6800000, hit:3612086, readhit:0, flush_ssd_blk:67940470 flush_hdd_blk:64337920
+current run time: 955
+totalreq:6850000, readreq:0, wrtreq:6850000, hit:3612086, readhit:0, flush_ssd_blk:68440470 flush_hdd_blk:64837952
+current run time: 962
+totalreq:6900000, readreq:0, wrtreq:6900000, hit:3612116, readhit:0, flush_ssd_blk:68940470 flush_hdd_blk:65337920
+current run time: 970
+totalreq:6950000, readreq:0, wrtreq:6950000, hit:3612136, readhit:0, flush_ssd_blk:69440470 flush_hdd_blk:65837888
+current run time: 977
+totalreq:7000000, readreq:0, wrtreq:7000000, hit:3612266, readhit:0, flush_ssd_blk:69940470 flush_hdd_blk:66337792
+current run time: 986
+totalreq:7050000, readreq:0, wrtreq:7050000, hit:3612266, readhit:0, flush_ssd_blk:70440470 flush_hdd_blk:66837760
+current run time: 993
+totalreq:7100000, readreq:0, wrtreq:7100000, hit:3621536, readhit:0, flush_ssd_blk:70940470 flush_hdd_blk:67328512
+current run time: 1000
+totalreq:7150000, readreq:0, wrtreq:7150000, hit:3682576, readhit:0, flush_ssd_blk:71440470 flush_hdd_blk:67767424
+current run time: 1006
+totalreq:7200000, readreq:0, wrtreq:7200000, hit:3682576, readhit:0, flush_ssd_blk:71940470 flush_hdd_blk:68267456
+current run time: 1016
+totalreq:7250000, readreq:0, wrtreq:7250000, hit:3682716, readhit:0, flush_ssd_blk:72440470 flush_hdd_blk:68767296
+current run time: 1022
+totalreq:7300000, readreq:0, wrtreq:7300000, hit:3682716, readhit:0, flush_ssd_blk:72940470 flush_hdd_blk:69267328
+current run time: 1033
+totalreq:7350000, readreq:0, wrtreq:7350000, hit:3682856, readhit:0, flush_ssd_blk:73440470 flush_hdd_blk:69767168
+current run time: 1040
+totalreq:7400000, readreq:0, wrtreq:7400000, hit:3682856, readhit:0, flush_ssd_blk:73940470 flush_hdd_blk:70267200
+current run time: 1047
+totalreq:7450000, readreq:0, wrtreq:7450000, hit:3683066, readhit:0, flush_ssd_blk:74440470 flush_hdd_blk:70766976
+current run time: 1055
+totalreq:7500000, readreq:0, wrtreq:7500000, hit:3707806, readhit:0, flush_ssd_blk:74940470 flush_hdd_blk:71242240
+current run time: 1061
+totalreq:7550000, readreq:0, wrtreq:7550000, hit:3736688, readhit:0, flush_ssd_blk:75440470 flush_hdd_blk:71713344
+current run time: 1069
+totalreq:7600000, readreq:0, wrtreq:7600000, hit:3801508, readhit:0, flush_ssd_blk:75940470 flush_hdd_blk:72148544
+current run time: 1074
+totalreq:7650000, readreq:0, wrtreq:7650000, hit:3801848, readhit:0, flush_ssd_blk:76440470 flush_hdd_blk:72648192
+current run time: 1082
+totalreq:7700000, readreq:0, wrtreq:7700000, hit:3801858, readhit:0, flush_ssd_blk:76940470 flush_hdd_blk:73148160
+current run time: 1088
+totalreq:7750000, readreq:0, wrtreq:7750000, hit:3802128, readhit:0, flush_ssd_blk:77440470 flush_hdd_blk:73647872
+current run time: 1096
+totalreq:7800000, readreq:0, wrtreq:7800000, hit:3802268, readhit:0, flush_ssd_blk:77940470 flush_hdd_blk:74147776
+current run time: 1103
+totalreq:7850000, readreq:0, wrtreq:7850000, hit:3803528, readhit:0, flush_ssd_blk:78440470 flush_hdd_blk:74646528
+current run time: 1113
+totalreq:7900000, readreq:0, wrtreq:7900000, hit:3836678, readhit:0, flush_ssd_blk:78940470 flush_hdd_blk:75113344
+current run time: 1122
+totalreq:7950000, readreq:0, wrtreq:7950000, hit:3837188, readhit:0, flush_ssd_blk:79440470 flush_hdd_blk:75612864
+current run time: 1131
+totalreq:8000000, readreq:0, wrtreq:8000000, hit:3843338, readhit:0, flush_ssd_blk:79940470 flush_hdd_blk:76106688
+current run time: 1140
+totalreq:8050000, readreq:0, wrtreq:8050000, hit:3869378, readhit:0, flush_ssd_blk:80440470 flush_hdd_blk:76580672
+current run time: 1148
+totalreq:8100000, readreq:0, wrtreq:8100000, hit:3885848, readhit:0, flush_ssd_blk:80940470 flush_hdd_blk:77064192
+current run time: 1157
+totalreq:8150000, readreq:0, wrtreq:8150000, hit:3885858, readhit:0, flush_ssd_blk:81440470 flush_hdd_blk:77564160
+current run time: 1165
+totalreq:8200000, readreq:0, wrtreq:8200000, hit:3941894, readhit:0, flush_ssd_blk:81940470 flush_hdd_blk:78008128
+current run time: 1173
+totalreq:8250000, readreq:0, wrtreq:8250000, hit:3944544, readhit:0, flush_ssd_blk:82440470 flush_hdd_blk:78505472
+current run time: 1182
+totalreq:8300000, readreq:0, wrtreq:8300000, hit:3984114, readhit:0, flush_ssd_blk:82940470 flush_hdd_blk:78965888
+current run time: 1191
+totalreq:8350000, readreq:0, wrtreq:8350000, hit:3993404, readhit:0, flush_ssd_blk:83440470 flush_hdd_blk:79456640
+current run time: 1197
+totalreq:8400000, readreq:0, wrtreq:8400000, hit:4324234, readhit:0, flush_ssd_blk:83940470 flush_hdd_blk:79625792
+current run time: 1200
+totalreq:8450000, readreq:0, wrtreq:8450000, hit:4497004, readhit:0, flush_ssd_blk:84440470 flush_hdd_blk:79953024
+current run time: 1209
+totalreq:8500000, readreq:0, wrtreq:8500000, hit:4497004, readhit:0, flush_ssd_blk:84940470 flush_hdd_blk:80453056
+current run time: 1210
+totalreq:8550000, readreq:0, wrtreq:8550000, hit:4575594, readhit:0, flush_ssd_blk:85440470 flush_hdd_blk:80874432
+current run time: 1211
+totalreq:8600000, readreq:0, wrtreq:8600000, hit:4869444, readhit:0, flush_ssd_blk:85940470 flush_hdd_blk:81080576
+current run time: 1214
+totalreq:8650000, readreq:0, wrtreq:8650000, hit:5257464, readhit:0, flush_ssd_blk:86440470 flush_hdd_blk:81192576
+current run time: 1215
+totalreq:8700000, readreq:0, wrtreq:8700000, hit:5574464, readhit:0, flush_ssd_blk:86940470 flush_hdd_blk:81375552
+current run time: 1219
+totalreq:8750000, readreq:0, wrtreq:8750000, hit:5612994, readhit:0, flush_ssd_blk:87440470 flush_hdd_blk:81837056
+current run time: 1229
+totalreq:8800000, readreq:0, wrtreq:8800000, hit:5627374, readhit:0, flush_ssd_blk:87940470 flush_hdd_blk:82322688
+current run time: 1238
+totalreq:8850000, readreq:0, wrtreq:8850000, hit:5712194, readhit:0, flush_ssd_blk:88440470 flush_hdd_blk:82737856
+current run time: 1245
+totalreq:8900000, readreq:0, wrtreq:8900000, hit:5891624, readhit:0, flush_ssd_blk:88940470 flush_hdd_blk:83058432
+current run time: 1250
+totalreq:8950000, readreq:0, wrtreq:8950000, hit:5891864, readhit:0, flush_ssd_blk:89440470 flush_hdd_blk:83558144
+current run time: 1259
+totalreq:9000000, readreq:0, wrtreq:9000000, hit:5940504, readhit:0, flush_ssd_blk:89940470 flush_hdd_blk:84009536
+current run time: 1268
+totalreq:9050000, readreq:0, wrtreq:9050000, hit:5942204, readhit:0, flush_ssd_blk:90440470 flush_hdd_blk:84507840
+current run time: 1275
+totalreq:9100000, readreq:0, wrtreq:9100000, hit:6206364, readhit:0, flush_ssd_blk:90940470 flush_hdd_blk:84743680
+current run time: 1280
+totalreq:9150000, readreq:0, wrtreq:9150000, hit:6529404, readhit:0, flush_ssd_blk:91440470 flush_hdd_blk:84920640
+current run time: 1284
+totalreq:9200000, readreq:0, wrtreq:9200000, hit:6715404, readhit:0, flush_ssd_blk:91940470 flush_hdd_blk:85234624
+current run time: 1289
+totalreq:9250000, readreq:0, wrtreq:9250000, hit:6974994, readhit:0, flush_ssd_blk:92440470 flush_hdd_blk:85475008
+current run time: 1293
+totalreq:9300000, readreq:0, wrtreq:9300000, hit:7073832, readhit:0, flush_ssd_blk:92940470 flush_hdd_blk:85876224
+current run time: 1301
+totalreq:9350000, readreq:0, wrtreq:9350000, hit:7074582, readhit:0, flush_ssd_blk:93440470 flush_hdd_blk:86375424
+current run time: 1307
+totalreq:9400000, readreq:0, wrtreq:9400000, hit:7074582, readhit:0, flush_ssd_blk:93940470 flush_hdd_blk:86875456
+current run time: 1316
+totalreq:9450000, readreq:0, wrtreq:9450000, hit:7189084, readhit:0, flush_ssd_blk:94440470 flush_hdd_blk:87260928
+current run time: 1322
+totalreq:9500000, readreq:0, wrtreq:9500000, hit:7224504, readhit:0, flush_ssd_blk:94940470 flush_hdd_blk:87725504
+current run time: 1328
+totalreq:9550000, readreq:0, wrtreq:9550000, hit:7263564, readhit:0, flush_ssd_blk:95440470 flush_hdd_blk:88186496
+current run time: 1336
+totalreq:9600000, readreq:0, wrtreq:9600000, hit:7320104, readhit:0, flush_ssd_blk:95940470 flush_hdd_blk:88629952
+current run time: 1340
+totalreq:9650000, readreq:0, wrtreq:9650000, hit:7368664, readhit:0, flush_ssd_blk:96440470 flush_hdd_blk:89081344
+current run time: 1348
+totalreq:9700000, readreq:0, wrtreq:9700000, hit:7368814, readhit:0, flush_ssd_blk:96940470 flush_hdd_blk:89581248
+current run time: 1358
+totalreq:9750000, readreq:0, wrtreq:9750000, hit:7385634, readhit:0, flush_ssd_blk:97440470 flush_hdd_blk:90064384
+current run time: 1365
+totalreq:9800000, readreq:0, wrtreq:9800000, hit:7588424, readhit:0, flush_ssd_blk:97940470 flush_hdd_blk:90361600
+current run time: 1370
+totalreq:9850000, readreq:0, wrtreq:9850000, hit:7871508, readhit:0, flush_ssd_blk:98440470 flush_hdd_blk:90578496
+current run time: 1375
+totalreq:9900000, readreq:0, wrtreq:9900000, hit:8122578, readhit:0, flush_ssd_blk:98940470 flush_hdd_blk:90827456
+current run time: 1380
+totalreq:9950000, readreq:0, wrtreq:9950000, hit:8122728, readhit:0, flush_ssd_blk:99440470 flush_hdd_blk:91327296
+current run time: 1386
+totalreq:10000000, readreq:0, wrtreq:10000000, hit:8122728, readhit:0, flush_ssd_blk:99940470 flush_hdd_blk:91827328
+current run time: 1388
+totalreq:10050000, readreq:0, wrtreq:10050000, hit:8122898, readhit:0, flush_ssd_blk:100440470 flush_hdd_blk:92327104
+current run time: 1390
+totalreq:10100000, readreq:0, wrtreq:10100000, hit:8123308, readhit:0, flush_ssd_blk:100940470 flush_hdd_blk:92826752
+current run time: 1392
+totalreq:10150000, readreq:0, wrtreq:10150000, hit:8123308, readhit:0, flush_ssd_blk:101440470 flush_hdd_blk:93326720
+current run time: 1394
+totalreq:10200000, readreq:0, wrtreq:10200000, hit:8123478, readhit:0, flush_ssd_blk:101940470 flush_hdd_blk:93826560
+current run time: 1396
+totalreq:10250000, readreq:0, wrtreq:10250000, hit:8269278, readhit:0, flush_ssd_blk:102440470 flush_hdd_blk:94180736
+current run time: 1398
+totalreq:10300000, readreq:0, wrtreq:10300000, hit:8535838, readhit:0, flush_ssd_blk:102940470 flush_hdd_blk:94414208
+current run time: 1403
+totalreq:10350000, readreq:0, wrtreq:10350000, hit:8587758, readhit:0, flush_ssd_blk:103440470 flush_hdd_blk:94862272
+current run time: 1410
+totalreq:10400000, readreq:0, wrtreq:10400000, hit:8655618, readhit:0, flush_ssd_blk:103940470 flush_hdd_blk:95294400
+current run time: 1419
+totalreq:10450000, readreq:0, wrtreq:10450000, hit:8732288, readhit:0, flush_ssd_blk:104440470 flush_hdd_blk:95717760
+current run time: 1426
+totalreq:10500000, readreq:0, wrtreq:10500000, hit:8746978, readhit:0, flush_ssd_blk:104940470 flush_hdd_blk:96203072
+current run time: 1434
+totalreq:10550000, readreq:0, wrtreq:10550000, hit:8879138, readhit:0, flush_ssd_blk:105440470 flush_hdd_blk:96570880
+current run time: 1438
+totalreq:10600000, readreq:0, wrtreq:10600000, hit:9197358, readhit:0, flush_ssd_blk:105940470 flush_hdd_blk:96752704
+current run time: 1443
+totalreq:10650000, readreq:0, wrtreq:10650000, hit:9379538, readhit:0, flush_ssd_blk:106440470 flush_hdd_blk:97070464
+current run time: 1452
+totalreq:10700000, readreq:0, wrtreq:10700000, hit:9379538, readhit:0, flush_ssd_blk:106940470 flush_hdd_blk:97570496
+current run time: 1454
+totalreq:10750000, readreq:0, wrtreq:10750000, hit:9380348, readhit:0, flush_ssd_blk:107440470 flush_hdd_blk:98069696
+current run time: 1455
+totalreq:10800000, readreq:0, wrtreq:10800000, hit:9429218, readhit:0, flush_ssd_blk:107940470 flush_hdd_blk:98520832
+current run time: 1460
+totalreq:10850000, readreq:0, wrtreq:10850000, hit:9667968, readhit:0, flush_ssd_blk:108440470 flush_hdd_blk:98782080
+current run time: 1462
+totalreq:10900000, readreq:0, wrtreq:10900000, hit:9867758, readhit:0, flush_ssd_blk:108940470 flush_hdd_blk:99082304
+current run time: 1470
+totalreq:10950000, readreq:0, wrtreq:10950000, hit:9882008, readhit:0, flush_ssd_blk:109440470 flush_hdd_blk:99568000
+current run time: 1478
+totalreq:11000000, readreq:0, wrtreq:11000000, hit:9902058, readhit:0, flush_ssd_blk:109940470 flush_hdd_blk:100048000
+current run time: 1486
+totalreq:11050000, readreq:0, wrtreq:11050000, hit:9999698, readhit:0, flush_ssd_blk:110440470 flush_hdd_blk:100450304
+current run time: 1491
+totalreq:11100000, readreq:0, wrtreq:11100000, hit:10044526, readhit:0, flush_ssd_blk:110940470 flush_hdd_blk:100905536
+current run time: 1498
+totalreq:11150000, readreq:0, wrtreq:11150000, hit:10099402, readhit:0, flush_ssd_blk:111440470 flush_hdd_blk:101350656
+current run time: 1506
+totalreq:11200000, readreq:0, wrtreq:11200000, hit:10410542, readhit:0, flush_ssd_blk:111940470 flush_hdd_blk:101539520
+current run time: 1510
+totalreq:11250000, readreq:0, wrtreq:11250000, hit:10653942, readhit:0, flush_ssd_blk:112440470 flush_hdd_blk:101796096
+current run time: 1517
+totalreq:11300000, readreq:0, wrtreq:11300000, hit:10903800, readhit:0, flush_ssd_blk:112940470 flush_hdd_blk:102046208
+current run time: 1523
+totalreq:11350000, readreq:0, wrtreq:11350000, hit:11156200, readhit:0, flush_ssd_blk:113440470 flush_hdd_blk:102293824
+current run time: 1528
+totalreq:11400000, readreq:0, wrtreq:11400000, hit:11259630, readhit:0, flush_ssd_blk:113940470 flush_hdd_blk:102690432
+current run time: 1536
+totalreq:11450000, readreq:0, wrtreq:11450000, hit:11444740, readhit:0, flush_ssd_blk:114440470 flush_hdd_blk:103005312
+current run time: 1542
+totalreq:11500000, readreq:0, wrtreq:11500000, hit:11463090, readhit:0, flush_ssd_blk:114940470 flush_hdd_blk:103486912
+current run time: 1550
+totalreq:11550000, readreq:0, wrtreq:11550000, hit:11511140, readhit:0, flush_ssd_blk:115440470 flush_hdd_blk:103938880
+current run time: 1556
+totalreq:11600000, readreq:0, wrtreq:11600000, hit:11823530, readhit:0, flush_ssd_blk:115940470 flush_hdd_blk:104126528
+current run time: 1560
+totalreq:11650000, readreq:0, wrtreq:11650000, hit:12084996, readhit:0, flush_ssd_blk:116440470 flush_hdd_blk:104365056
+current run time: 1567
+ totalreqNum:11671568
+ read_req_count: 0
+ write_req_count: 11671568
+ hit num:12215266
+ hitnum_r:0
+ hitnum_w:12215266
+ read_ssd_blocks:104450368
+ flush_ssd_blocks:116656150
+ read_hdd_blocks:0
+ flush_hdd_blocks:104450432
+ flush_clean_blocks:0
+ total run time (s): 1570.690395
+ time_read_ssd : 1514.214964
+ time_write_ssd : 1665.936833
+ time_read_smr : 0.000000
+ time_write_smr : 1514.214963
+ Batch flush HDD time:0
+ Cache Proportion(R/W): [0/49982]
+ wt_hit_rd: 0
+ rd_hit_wt: 0
+----------------SIMULATOR------------
+Time:
+Read FIFO:	2.120102
+Write FIFO:	2.387763
+Read SMR:	0.008796
+Flush SMR:	0.008599
+Total I/O:	4.525260
+FIFO Collect:	1488.251915
+Block/Band Count:
+Read FIFO:	0
+Write FIFO:	104450432
+FIFO Collect:	93060278
+Read SMR:	0
+FIFO Write HIT:	0
+Read Bands:	374590
+Flush Bands:	374590
+Flush BandSize:	8953884835840
+WA AVG:	20.928656

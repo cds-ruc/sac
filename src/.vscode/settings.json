@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "strategies.h": "c",
+        "pore.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

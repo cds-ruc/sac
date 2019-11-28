@@ -1,0 +1,80 @@
+Simulator Device: fifo part=3, smr part=4
+init_Strategy: 0, init_table: 0, init_desp: 0, inti_Stt: 0, init_TSwitcher: 0
+ totalreqNum:1
+ read_req_count: 0
+ write_req_count: 1
+ hit num:0
+ hitnum_r:0
+ hitnum_w:0
+ read_ssd_blocks:0
+ flush_ssd_blocks:0
+ read_hdd_blocks:0
+ flush_hdd_blocks:1
+ flush_clean_blocks:0
+ total run time (s): 0.000000
+ time_read_ssd : 0.000000
+ time_write_ssd : 0.000000
+ time_read_smr : 0.000000
+ time_write_smr : 0.070945
+ Batch flush HDD time:0
+ Cache Proportion(R/W): [0/0]
+ wt_hit_rd: 0
+ rd_hit_wt: 0
+totalreq:50000, readreq:0, wrtreq:50000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:50000
+current run time: 2
+totalreq:100000, readreq:0, wrtreq:100000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:100000
+current run time: 5
+totalreq:150000, readreq:0, wrtreq:150000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:150000
+current run time: 7
+totalreq:200000, readreq:0, wrtreq:200000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:200000
+current run time: 133
+totalreq:250000, readreq:0, wrtreq:250000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:250000
+current run time: 135
+totalreq:300000, readreq:0, wrtreq:300000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:300000
+current run time: 138
+totalreq:350000, readreq:0, wrtreq:350000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:350000
+current run time: 141
+totalreq:400000, readreq:0, wrtreq:400000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:400000
+current run time: 267
+totalreq:450000, readreq:0, wrtreq:450000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:450000
+current run time: 270
+totalreq:500000, readreq:0, wrtreq:500000, hit:0, readhit:0, flush_ssd_blk:0 flush_hdd_blk:500000
+current run time: 272
+ totalreqNum:500000
+ read_req_count: 0
+ write_req_count: 500000
+ hit num:0
+ hitnum_r:0
+ hitnum_w:0
+ read_ssd_blocks:0
+ flush_ssd_blocks:0
+ read_hdd_blocks:0
+ flush_hdd_blocks:500000
+ flush_clean_blocks:0
+ total run time (s): 272.795943
+ time_read_ssd : 0.000000
+ time_write_ssd : 0.000000
+ time_read_smr : 0.000000
+ time_write_smr : 271.499284
+ Batch flush HDD time:0
+ Cache Proportion(R/W): [0/0]
+ wt_hit_rd: 0
+ rd_hit_wt: 0
+----------------SIMULATOR------------
+Time:
+Read FIFO:	226.837947
+Write FIFO:	24.598469
+Read SMR:	6.181288
+Flush SMR:	13.057691
+Total I/O:	270.675395
+FIFO Collect:	227.536638
+Block/Band Count:
+Read FIFO:	0
+Write FIFO:	500000
+FIFO Collect:	198864
+Read SMR:	0
+FIFO Write HIT:	0
+Read Bands:	56
+Flush Bands:	56
+Flush BandSize:	1056964608
+WA AVG:	0.516096

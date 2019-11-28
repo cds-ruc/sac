@@ -1,0 +1,9 @@
+[global]
+name=seq_w_nobuf
+blocksize=8K
+ioengine=sync
+direct=1
+rw=write
+
+[job1]
+runtime=6000
