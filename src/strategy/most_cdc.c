@@ -8,6 +8,28 @@
 #define IsClean(flag) ( (flag & SSD_BUF_DIRTY) == 0 )
 
 #define EVICT_DITRY_GRAIN 64 // The grain of once dirty blocks eviction
+typedef struct Dscptr
+{
+    long            serial_id;
+    SSDBufTag       ssd_buf_tag;
+    unsigned 	    flag;
+    long            pre,next;
+    unsigned long   heat;
+    long     	    stamp;
+    unsigned long   zoneId;
+}Dscptr;
+
+typedef struct ZoneCtrl
+{
+    unsigned long   zoneId;
+    long            heat;
+    long            pagecnt_dirty;
+    long            pagecnt_clean;
+    long            head,tail;
+    int             activate_after_n_cycles;
+    unsigned long score;
+
+}ZoneCtrl;
 
 typedef struct
 {
@@ -16,7 +38,7 @@ typedef struct
     pthread_mutex_t lock;
 } CleanDespCtrl;
 
-static Dscptr*   GlobalDespArray;
+static Dscptr*              GlobalDespArray;
 static ZoneCtrl*            ZoneCtrlArray;
 
 static CleanDespCtrl        CleanCtrl;

@@ -37,7 +37,7 @@ void initSSDTable(size_t size)
 
 unsigned long ssdtableHashcode(DespTag tag)
 {
-	unsigned long ssd_hash = (tag.offset / SSD_BUFFER_SIZE) % NBLOCK_SMR_FIFO;
+	unsigned long ssd_hash = (tag.offset / BLKSZ) % NBLOCK_SMR_PB;
 	return ssd_hash;
 }
 

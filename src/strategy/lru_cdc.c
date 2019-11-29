@@ -4,7 +4,7 @@
 #include "../global.h"
 #include"../shmlib.h"
 #include "lru_private.h"
-#include "lru_rw.h"
+#include "LRU_CDC.h"
 
 
 #define EVICT_DITRY_GRAIN 64
@@ -29,7 +29,7 @@ static long                 StampGlobal;      /* Current io sequenced number in 
  * init buffer hash table, Strategy_control, buffer, work_mem
  */
 int
-initSSDBufferFor_LRU_rw()
+initSSDBufferFor_LRU_CDC()
 {
     //STT->cacheLimit = Param1;
     int stat = multi_SHM_lock_n_check("LOCK_SSDBUF_STRATEGY_LRU");
@@ -62,7 +62,7 @@ initSSDBufferFor_LRU_rw()
 }
 
 int
-Unload_Buf_LRU_rw(long * out_despid_array, int max_n_batch, enum_t_vict suggest_type)
+Unload_Buf_LRU_CDC(long * out_despid_array, int max_n_batch, enum_t_vict suggest_type)
 {
     long frozen_id;
     int cnt = 0;
@@ -116,7 +116,7 @@ FLAG_EVICT_DIRTY:
 }
 
 int
-hitInBuffer_LRU_rw(long serial_id, unsigned flag)
+hitInBuffer_LRU_CDC(long serial_id, unsigned flag)
 {
     StrategyDesp_LRU_private* ssd_buf_hdr_for_lru = &strategy_desp[serial_id];
     moveToLRUHead(ssd_buf_hdr_for_lru, flag);
@@ -125,7 +125,7 @@ hitInBuffer_LRU_rw(long serial_id, unsigned flag)
 }
 
 int
-insertBuffer_LRU_rw(long serial_id, unsigned flag)
+insertBuffer_LRU_CDC(long serial_id, unsigned flag)
 {
     //strategy_desp[serial_id].user_id = UserId;
     StrategyDesp_LRU_private * desp = strategy_desp + serial_id;

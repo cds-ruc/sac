@@ -21,7 +21,7 @@ int multiuser_access()
 //    if (EvictStrategy == CMR)
 //    {
 //        flush_bands++;
-//        returnCode = pwrite(hdd_fd, ssd_buffer, SSD_BUFFER_SIZE, offset);
+//        returnCode = pwrite(hdd_fd, ssd_buffer, BLKSZ, offset);
 //        if (returnCode < 0)
 //        {
 //            printf("[ERROR] write_block():-------write to smr: fd=%d, errorcode=%d, offset=%lu\n", ssd_fd, returnCode, offset);
@@ -37,7 +37,7 @@ int multiuser_access()
 //    }
 //    else if (EvictStrategy == SMR)
 //    {
-//        returnCode = smrwrite(hdd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_tag.offset);
+//        returnCode = smrwrite(hdd_fd, ssd_buffer, BLKSZ, ssd_buf_tag.offset);
 //        if (returnCode < 0)
 //        {
 //            printf("[ERROR] write_block():---------SMR\n");
@@ -50,7 +50,7 @@ int multiuser_access()
 //        flush_ssd_blocks++;
 //        if (flush_ssd_blocks % 10000 == 0)
 //            printf("hit num:%lu   flush_ssd_blocks:%lu flush_times:%lu flush_fifo_blocks:%lu  flusd_bands:%lu\n ", hit_num, flush_ssd_blocks, flush_times, flush_fifo_blocks, flush_bands);
-//        returnCode = pwrite(ssd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_id * SSD_BUFFER_SIZE);
+//        returnCode = pwrite(ssd_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_id * BLKSZ);
 //        if (returnCode < 0)
 //        {
 //            printf("[ERROR] write():-------write to ssd: fd=%d, errorcode=%d, offset=%lu\n", ssd_fd, returnCode, offset);

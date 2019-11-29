@@ -1,9 +1,11 @@
 #include <stdlib.h>
-#include "../timerUtils.h"
+#include <math.h>
+
 #include "paul.h"
+#include "../timerUtils.h"
 #include "../statusDef.h"
 #include "../report.h"
-#include <math.h>
+
 //#define random(x) (rand()%x)
 #define IsDirty(flag) ( (flag & SSD_BUF_DIRTY) != 0 )
 #define IsClean(flag) ( (flag & SSD_BUF_DIRTY) == 0 )

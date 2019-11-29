@@ -75,23 +75,23 @@
 //initFIFOCache()
 //{
 //    /* initialliz related constants */
-//    SMR_DISK_OFFSET = NBLOCK_SMR_FIFO * BLKSZ;
+//    SMR_DISK_OFFSET = NBLOCK_SMR_PB * BLKSZ;
 //    band_size_num = BNDSZ / 1024 / 1024 / 2 + 1;
 //    num_each_size = NSMRBands / band_size_num;
 //
 //    global_fifo_ctrl = (FIFOCtrl*) malloc(sizeof(FIFOCtrl));
 //    global_fifo_ctrl->first_useId = global_fifo_ctrl->last_useId = -1;
 //    global_fifo_ctrl->first_freeId = 0;
-//    global_fifo_ctrl->last_freeId = NBLOCK_SMR_FIFO - 1;
+//    global_fifo_ctrl->last_freeId = NBLOCK_SMR_PB - 1;
 //    global_fifo_ctrl->n_used = 0;
 //
-//    fifo_desp_array = (FIFODesc *) malloc(sizeof(FIFODesc) * NBLOCK_SMR_FIFO);
+//    fifo_desp_array = (FIFODesc *) malloc(sizeof(FIFODesc) * NBLOCK_SMR_PB);
 //    FIFODesc* fifo_hdr = fifo_desp_array;
 //    long i;
-//    for (i = 0; i < NBLOCK_SMR_FIFO; fifo_hdr++, i++)
+//    for (i = 0; i < NBLOCK_SMR_PB; fifo_hdr++, i++)
 //    {
 //        fifo_hdr->despId = i;
-//        fifo_hdr->next_freeId = (i==NBLOCK_SMR_FIFO-1) ? -1 : i + 1;
+//        fifo_hdr->next_freeId = (i==NBLOCK_SMR_PB-1) ? -1 : i + 1;
 //        fifo_hdr->pre_useId = fifo_hdr->next_useId = -1;
 //    }
 //
@@ -115,7 +115,7 @@
 //    simu_time_write_smr = 0;
 //    simu_time_write_fifo = 0;
 //
-//    initSSDTable(NBLOCK_SMR_FIFO);
+//    initSSDTable(NBLOCK_SMR_PB);
 //
 //    pthread_t tid;
 //    int err = pthread_create(&tid, NULL, smr_fifo_monitor_thread, NULL);

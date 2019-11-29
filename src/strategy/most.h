@@ -1,6 +1,5 @@
 #ifndef _MOST_H_
 #define _MOST_H_
-#include "pore.h"
 #include "../cache.h"
 #include "../global.h"
 

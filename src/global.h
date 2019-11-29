@@ -57,32 +57,22 @@ struct RuntimeSTAT
     unsigned long n_RMW;
 };
 
+typedef enum enum_workload_mode
+{
+    R, // 0
+    W, // 1
+    RW // 2 *default
+}enum_workload_mode;
+extern enum workload_mode Workload_Mode;
+
 typedef enum
 {
-//    CLOCK = 0,
-//    LRU,
-//    LRUofBand,
-      MOST,
-      MOST_RW,
-//    Most_Dirty,
-//    SCAN,
-//    CMR,
-//    SMR,
-//    WA,
-//    MaxCold,
-//    MaxAll,
-//    AvgBandHot,
-//    HotDivSize,
-    /** add for multiuser **/
-//    LRU_global,
-    LRU_private,
-    LRU_rw,
-//    LRU_batch,
-    PORE,
-    PORE_PLUS,
-    PORE_PLUS_V2,
+//   LRU,
     PAUL,
-    OLDPORE
+    MOST,
+    MOST_CDC,
+    LRU_private,
+    LRU_CDC
 }SSDEvictionStrategy;
 
 /** This user basic info */
@@ -97,17 +87,13 @@ extern unsigned long Param2;
 extern int BatchSize;
 extern long Cycle_Length;
 /** All users basic setup **/
-extern blksize_t NBLOCK_MAX_CACHE_SIZE;
 extern blkcnt_t NBLOCK_SSD_CACHE;
 extern blkcnt_t NTABLE_SSD_CACHE;
-extern blkcnt_t SSD_BUFFER_SIZE;
-extern blkcnt_t NBLOCK_SMR_FIFO;
+extern blkcnt_t NBLOCK_SMR_PB;
 //extern blkcnt_t NSMRBands;		// 194180*(18MB+36MB)/2~5TB
 //extern blkcnt_t NSMRBlocks;		// 2621952*8KB~20GB
 //extern blkcnt_t NSSDs;
 extern blkcnt_t NSSDTables;
-//extern blkcnt_t NBANDTables;
-extern blkcnt_t SSD_SIZE;
 extern  blksize_t BLKSZ;
 extern  blkcnt_t  NZONES;
 extern  blksize_t ZONESZ;

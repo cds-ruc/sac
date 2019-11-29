@@ -46,7 +46,7 @@ int HashTab_Init()
 
 unsigned long HashTab_GetHashCode(SSDBufTag ssd_buf_tag)
 {
-    unsigned long hashcode = (ssd_buf_tag.offset / SSD_BUFFER_SIZE) % NTABLE_SSD_CACHE;
+    unsigned long hashcode = (ssd_buf_tag.offset / BLKSZ) % NTABLE_SSD_CACHE;
     return hashcode;
 }
 

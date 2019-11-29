@@ -88,27 +88,27 @@ main(int argc, char** argv)
 
         NBLOCK_MAX_CACHE_SIZE = atol(argv[5]);
         NBLOCK_SSD_CACHE = NTABLE_SSD_CACHE = atol(argv[6]);
-        NBLOCK_SMR_FIFO = atol(argv[7]) * (ZONESZ / BLKSZ); //750 * 1024 * 1024 / BLKSZ; //
+        NBLOCK_SMR_PB = atol(argv[7]) * (ZONESZ / BLKSZ); //750 * 1024 * 1024 / BLKSZ; //
 
         if (strcmp(argv[8],"LRU") == 0)
             EvictStrategy = LRU_private;
-        else if (strcmp(argv[8],"LRU_RW") == 0)
-            EvictStrategy = LRU_rw;
+        else if (strcmp(argv[8],"LRU_CDC") == 0)
+            EvictStrategy = LRU_CDC;
         else if (strcmp(argv[8],"PAUL") == 0)
             EvictStrategy = PAUL;
         else if (strcmp(argv[8],"PORE") == 0)
             EvictStrategy = PORE;
         else if(strcmp(argv[8],"MOST") == 0)
             EvictStrategy = MOST;
-        else if(strcmp(argv[8],"MOST_RW") == 0)
-            EvictStrategy = MOST_RW;
+        else if(strcmp(argv[8],"MOST_CDC") == 0)
+            EvictStrategy = MOST_CDC;
         else if(strcmp(argv[8], "OLDPORE") == 0)
             EvictStrategy = OLDPORE;
         else
             usr_error("No cache algorithm matched. ");
 
         if(atoi(argv[9]) < 0)
-            Cycle_Length = NBLOCK_SMR_FIFO;
+            Cycle_Length = NBLOCK_SMR_PB;
         else
             Cycle_Length =  atoi(argv[9]) * (ZONESZ / BLKSZ);
 #ifdef CACHE_PROPORTIOIN_STATIC

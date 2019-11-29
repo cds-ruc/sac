@@ -76,7 +76,7 @@ static void* smr_fifo_monitor_thread();
 
 static int invalidDespInFIFO(FIFODesc* desp);
 #define isFIFOEmpty (global_fifo_ctrl.head == global_fifo_ctrl.tail)
-#define isFIFOFull  ((global_fifo_ctrl.tail + 1) % (NBLOCK_SMR_FIFO + 1) == global_fifo_ctrl.head)
+#define isFIFOFull  ((global_fifo_ctrl.tail + 1) % (NBLOCK_SMR_PB + 1) == global_fifo_ctrl.head)
 
 static unsigned long GetSMRActualBandSizeFromSSD(unsigned long offset);
 static unsigned long GetSMRBandNumFromSSD(unsigned long offset);
@@ -103,12 +103,12 @@ void InitEmulator()
     global_fifo_ctrl.n_used = 0;
     global_fifo_ctrl.head = global_fifo_ctrl.tail = 0;
 
-    posix_memalign(&fifo_desp_array, 1024,sizeof(FIFODesc) * (NBLOCK_SMR_FIFO + 1));
+    posix_memalign(&fifo_desp_array, 1024,sizeof(FIFODesc) * (NBLOCK_SMR_PB + 1));
 
 
     FIFODesc* fifo_hdr = fifo_desp_array;
     long i;
-    for (i = 0; i < (NBLOCK_SMR_FIFO + 1); fifo_hdr++, i++)
+    for (i = 0; i < (NBLOCK_SMR_PB + 1); fifo_hdr++, i++)
     {
         fifo_hdr->despId = i;
         fifo_hdr->isValid = 0;
@@ -134,7 +134,7 @@ void InitEmulator()
     simu_time_write_smr = 0;
     simu_time_write_fifo = 0;
 
-    initSSDTable(NBLOCK_SMR_FIFO + 1);
+    initSSDTable(NBLOCK_SMR_PB + 1);
 
     log_wa = fopen(log_wa_path, "w+");
     if(log_wa == NULL)
@@ -311,7 +311,7 @@ invalidDespInFIFO(FIFODesc* desp)
     int isHeadChanged = 0;
     while(!fifo_desp_array[global_fifo_ctrl.head].isValid && !isFIFOEmpty)
     {
-        global_fifo_ctrl.head = (global_fifo_ctrl.head + 1) % (NBLOCK_SMR_FIFO + 1);
+        global_fifo_ctrl.head = (global_fifo_ctrl.head + 1) % (NBLOCK_SMR_PB + 1);
         isHeadChanged = 1;
     }
     return isHeadChanged;
@@ -330,7 +330,7 @@ clockGetDespPB()
     /* Append to tail */
     newDesp = fifo_desp_array + global_fifo_ctrl.tail;
     newDesp->isValid = 1;
-    global_fifo_ctrl.tail = (global_fifo_ctrl.tail + 1) % (NBLOCK_SMR_FIFO + 1);
+    global_fifo_ctrl.tail = (global_fifo_ctrl.tail + 1) % (NBLOCK_SMR_PB + 1);
 
     return newDesp;
 }
@@ -387,7 +387,7 @@ flushFIFO()
     while(curPos != global_fifo_ctrl.tail)
     {
         FIFODesc* curDesp = fifo_desp_array + curPos;
-        long nextPos = (curDesp->despId + 1) % (NBLOCK_SMR_FIFO + 1);
+        long nextPos = (curDesp->despId + 1) % (NBLOCK_SMR_PB + 1);
 
         /* If the block belongs the same band with the header of fifo. */
         if (curDesp->isValid && GetSMRBandNumFromSSD(curDesp->tag.offset) == thisBandNum)

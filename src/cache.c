@@ -166,14 +166,14 @@ flushSSDBuffer(SSDBufDesp * ssd_buf_hdr)
         return;
     }
 
-    dev_pread(ssd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_id * SSD_BUFFER_SIZE);
+    dev_pread(ssd_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_id * BLKSZ);
     msec_r_ssd = TimerInterval_MICRO(&tv_start,&tv_stop);
     STT->time_read_ssd += Mirco2Sec(msec_r_ssd);
     STT->load_ssd_blocks++;
 #ifdef SIMULATION
-    dev_simu_write(ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_tag.offset);
+    dev_simu_write(ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_tag.offset);
 #else
-    dev_pwrite(hdd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_tag.offset);
+    dev_pwrite(hdd_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_tag.offset);
 #endif
     msec_w_hdd = TimerInterval_MICRO(&tv_start,&tv_stop);
     STT->time_write_hdd += Mirco2Sec(msec_w_hdd);
@@ -235,7 +235,7 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, bool * found, int alloc4What, int * isCallBac
     unsigned long   ssd_buf_hash = HashTab_GetHashCode(ssd_buf_tag);
     long            ssd_buf_id = HashTab_Lookup(ssd_buf_tag, ssd_buf_hash);
 
-    /* Cache HIT IN */
+    /* Cache HIT */
     if (ssd_buf_id >= 0)
     {
         ssd_buf_hdr = &ssd_buf_desps[ssd_buf_id];
@@ -258,7 +258,6 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, bool * found, int alloc4What, int * isCallBac
         *found = 1;
 
         return ssd_buf_hdr;
-
     }
 
     /* Cache MISS */
@@ -266,51 +265,11 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, bool * found, int alloc4What, int * isCallBac
     *isCallBack = CM_TryCallBack(ssd_buf_tag);
     enum_t_vict suggest_type = ENUM_B_Any;
 
-#ifdef CACHE_PROPORTIOIN_STATIC
-#ifdef NO_READ_CACHE
-    if(alloc4What == 0)
+    /* When there is NO free SSD space for cache, 
+     * pick serveral in-used cache block to evict according to strategy */
+    if ((ssd_buf_hdr = pop_freebuf()) == NULL)
     {
-        static char read_buf[8192];
-        return read_buf;
-    }
-#endif
-    if (STT->incache_n_clean >= Max_Clean_Cache)
-    {
-        suggest_type = ENUM_B_Clean;
-        goto FLAG_CACHEOUT;
-    }
-    else if (STT->incache_n_dirty >= Max_Dirty_Cache)
-    {
-        suggest_type = ENUM_B_Dirty;
-        goto FLAG_CACHEOUT;
-    }
-#endif // CACHE_PROPORTIOIN_STATIC
-
-//    _LOCK(&ssd_buf_desp_ctrl->lock);
-    ssd_buf_hdr = pop_freebuf();
-//    _UNLOCK(&ssd_buf_desp_ctrl->lock);
-
-    if (ssd_buf_hdr != NULL)
-    {
-        _LOCK(&ssd_buf_hdr->lock);
-        // if there is free SSD buffer left.
-    }
-    else
-    {
-        /** When there is NO free SSD space for cache **/
-        // TODO Choose a buffer by strategy/
-#ifdef R3BALANCER_ON
-        if((STT->flush_hdd_blocks + STT->flush_clean_blocks) >= TS_StartSize)
-        {   /* Decide victim type by T_Switcher */
-            int type = CM_CHOOSE();
-            if(type == 0)
-                suggest_type = ENUM_B_Clean;
-            else
-                suggest_type = ENUM_B_Dirty;
-        }
-#endif // R3BALANCER_ON
-
-FLAG_CACHEOUT:
+        // Cache Out:
         if(STT->incache_n_clean == 0)
             suggest_type = ENUM_B_Dirty;
         else if(STT->incache_n_dirty == 0)
@@ -321,34 +280,21 @@ FLAG_CACHEOUT:
         int n_evict;
         switch (EvictStrategy)
         {
-//            case PORE_PLUS_V2 :
-//                n_evict = LogOut_poreplus_v2(buf_despid_array, max_n_batch, suggest_type);
-//                break;
+
             case PAUL :
                 n_evict = LogOut_PAUL(buf_despid_array, max_n_batch, suggest_type);
                 break;
-//            case OLDPORE :
-//                n_evict = LogOut_oldpore(buf_despid_array, max_n_batch, suggest_type);
-//                break;
-//            case PORE:
-//                int i;
-//                n_evict = 64;
-//                for(i=0;i<n_evict;i++)
-//                {
-//                    buf_despid_array[i] = LogOutDesp_pore();
-//                }
-//                break;
             case MOST :
                 n_evict = LogOut_most(buf_despid_array, max_n_batch);
                 break;
-            case MOST_RW :
+            case MOST_CDC :
                 n_evict = LogOut_most_rw(buf_despid_array,max_n_batch,suggest_type);
                 break;
             case LRU_private:
                 n_evict = Unload_Buf_LRU_private(buf_despid_array, max_n_batch);
                 break;
-            case LRU_rw:
-                n_evict = Unload_Buf_LRU_rw(buf_despid_array, max_n_batch,suggest_type);
+            case LRU_CDC:
+                n_evict = Unload_Buf_LRU_CDC(buf_despid_array, max_n_batch,suggest_type);
                 break;
             default:
                 usr_warning("Current cache algorithm dose not support batched process.");
@@ -361,41 +307,27 @@ FLAG_CACHEOUT:
             long out_despId = buf_despid_array[k];
             ssd_buf_hdr = &ssd_buf_desps[out_despId];
 
-            _LOCK(&ssd_buf_hdr->lock);
+            // TODO Flush
+            flushSSDBuffer(ssd_buf_hdr);
+
+            /* Reset Metadata */
             // Clear Hashtable item.
             SSDBufTag oldtag = ssd_buf_hdr->ssd_buf_tag;
             unsigned long hash = HashTab_GetHashCode(oldtag);
             HashTab_Delete(oldtag,hash);
-            // TODO Flush
-            flushSSDBuffer(ssd_buf_hdr);
-
+            
+            // Reset buffer descriptor info. 
             IsDirty(ssd_buf_hdr->ssd_buf_flag) ? STT->incache_n_dirty -- : STT->incache_n_clean -- ;
             ssd_buf_hdr->ssd_buf_flag &= ~(SSD_BUF_VALID | SSD_BUF_DIRTY);
+
             // Push back to free list
             push_freebuf(ssd_buf_hdr);
             k++;
         }
-        ssd_buf_hdr = pop_freebuf();
-//
-//#else
-///* NO Longer support to evict only one blocks per time. */
-////        long out_despId;
-////        out_despId = Strategy_Desp_LogOut(flag); //need look
-////        ssd_buf_hdr = &ssd_buf_desps[out_despId];
-////        _LOCK(&ssd_buf_hdr->lock);
-////        // Clear Hashtable item.
-////        SSDBufTag oldtag = ssd_buf_hdr->ssd_buf_tag;
-////        unsigned long hash = HashTab_GetHashCode(oldtag);
-////        HashTab_Delete(oldtag,hash);
-////        // TODO Flush
-////        flushSSDBuffer(ssd_buf_hdr);
-////
-////        IsDirty(ssd_buf_hdr->ssd_buf_flag) ? STT->incache_n_dirty -- : STT->incache_n_clean -- ;
-////        ssd_buf_hdr->ssd_buf_flag &= ~(SSD_BUF_VALID | SSD_BUF_DIRTY);
-//
-//#endif // WRITE_IN_BATCH
+        ssd_buf_hdr = pop_freebuf(); 
     }
 
+    // Set Metadata for the new block. 
     flagOp(ssd_buf_hdr,alloc4What);
     CopySSDBufTag(ssd_buf_hdr->ssd_buf_tag,ssd_buf_tag);
 
@@ -413,22 +345,16 @@ initStrategySSDBuffer()
     {
     case LRU_private:
         return initSSDBufferFor_LRU_private();
-    case LRU_rw:
-        return initSSDBufferFor_LRU_rw();
-//        case Most:              return initSSDBufferForMost();
-//    case PORE:
-//        return InitPORE();
-//    case PORE_PLUS:
-//        return InitPORE_plus();
-//    case PORE_PLUS_V2:
-//        return Init_poreplus_v2();
+    case LRU_CDC:
+        return initSSDBufferFor_LRU_CDC();
+
     case PAUL:
         return Init_PUAL();
 //    case OLDPORE:
 //        return Init_oldpore();
     case MOST:
         return Init_most();
-    case MOST_RW:
+    case MOST_CDC:
         return Init_most_rw();
 
     }
@@ -444,15 +370,8 @@ Strategy_Desp_LogOut(unsigned flag)
 //        case LRU_global:        return Unload_LRUBuf();
     case LRU_private:
         usr_warning("LRU wrong time function revoke, please use BATHCH configure.\n");
-    case LRU_rw:
-        usr_warning("LRU_RW wrong time function revoke\n");
-//       case Most:              return LogOutDesp_most();
-//    case PORE:
-//        return LogOutDesp_pore();
-//    case PORE_PLUS:
-//        return LogOutDesp_pore_plus();
-//    case PORE_PLUS_V2:
-//        usr_warning("PORE_PLUS_V2 wrong time function revoke\n");
+    case LRU_CDC:
+        usr_warning("LRU_CDC wrong time function revoke\n");
     case PAUL:
         usr_warning("PAUL wrong time function revoke\n");
     case MOST:
@@ -469,8 +388,8 @@ Strategy_Desp_HitIn(SSDBufDesp* desp)
 //        case LRU_global:        return hitInLRUBuffer(desp->serial_id);
     case LRU_private:
         return hitInBuffer_LRU_private(desp->serial_id);
-    case LRU_rw:
-        return hitInBuffer_LRU_rw(desp->serial_id, desp->ssd_buf_flag);
+    case LRU_CDC:
+        return hitInBuffer_LRU_CDC(desp->serial_id, desp->ssd_buf_flag);
 //        case LRU_batch:         return hitInBuffer_LRU_batch(desp->serial_id);
 //        case Most:              return HitMostBuffer();
 //    case PORE:
@@ -485,7 +404,7 @@ Strategy_Desp_HitIn(SSDBufDesp* desp)
 //        return Hit_oldpore(desp->serial_id, desp->ssd_buf_flag);    
     case MOST:
         return Hit_most(desp->serial_id, desp->ssd_buf_flag);
-    case MOST_RW:
+    case MOST_CDC:
         return Hit_most_rw(desp->serial_id, desp->ssd_buf_flag);
 
     }
@@ -499,8 +418,8 @@ Strategy_Desp_LogIn(SSDBufDesp* desp)
     switch(EvictStrategy)
     {
 //        case LRU_global:        return insertLRUBuffer(serial_id);
-    case LRU_rw:
-        return insertBuffer_LRU_rw(desp->serial_id, desp->ssd_buf_flag);
+    case LRU_CDC:
+        return insertBuffer_LRU_CDC(desp->serial_id, desp->ssd_buf_flag);
 
     case LRU_private:
         return insertBuffer_LRU_private(desp->serial_id);
@@ -518,7 +437,7 @@ Strategy_Desp_LogIn(SSDBufDesp* desp)
 //        return LogIn_oldpore(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
     case MOST:
         return LogIn_most(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
-    case MOST_RW:
+    case MOST_CDC:
         return LogIn_most_rw(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
     }
     return -1;
@@ -533,7 +452,7 @@ read_block(off_t offset, char *ssd_buffer)
 
 #ifdef NO_CACHE
 #ifdef SIMULATION
-    dev_simu_read(ssd_buffer, SSD_BUFFER_SIZE, offset);
+    dev_simu_read(ssd_buffer, BLKSZ, offset);
 #else
     dev_pread(hdd_fd, ssd_buffer, BLKSZ, offset);
 #endif // SIMULATION
@@ -557,7 +476,7 @@ read_block(off_t offset, char *ssd_buffer)
     IsHit = found;
     if (found)
     {
-        dev_pread(ssd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_id * SSD_BUFFER_SIZE);
+        dev_pread(ssd_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_id * BLKSZ);
         msec_r_ssd = TimerInterval_MICRO(&tv_start,&tv_stop);
 
         STT->hitnum_r++;
@@ -567,9 +486,9 @@ read_block(off_t offset, char *ssd_buffer)
     else
     {
 #ifdef SIMULATION
-        dev_simu_read(ssd_buffer, SSD_BUFFER_SIZE, offset);
+        dev_simu_read(ssd_buffer, BLKSZ, offset);
 #else
-        dev_pread(hdd_fd, ssd_buffer, SSD_BUFFER_SIZE, offset);
+        dev_pread(hdd_fd, ssd_buffer, BLKSZ, offset);
 #endif // SIMULATION
         msec_r_hdd = TimerInterval_MICRO(&tv_start,&tv_stop);
         STT->time_read_hdd += Mirco2Sec(msec_r_hdd);
@@ -584,7 +503,7 @@ read_block(off_t offset, char *ssd_buffer)
         CM_T_hitmiss_Reg(miss_usetime);
         /* ------------------ */
 
-        dev_pwrite(ssd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_id * SSD_BUFFER_SIZE);
+        dev_pwrite(ssd_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_id * BLKSZ);
         msec_w_ssd = TimerInterval_MICRO(&tv_start,&tv_stop);
         STT->time_write_ssd += Mirco2Sec(msec_w_ssd);
         STT->flush_ssd_blocks++;
@@ -638,7 +557,7 @@ write_block(off_t offset, char *ssd_buffer)
     IsHit = found;
     STT->hitnum_w += IsHit;
 
-    dev_pwrite(ssd_fd, ssd_buffer, SSD_BUFFER_SIZE, ssd_buf_hdr->ssd_buf_id * SSD_BUFFER_SIZE);
+    dev_pwrite(ssd_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_id * BLKSZ);
     msec_w_ssd = TimerInterval_MICRO(&tv_start,&tv_stop);
     STT->time_write_ssd += Mirco2Sec(msec_w_ssd);
     STT->flush_ssd_blocks++ ;

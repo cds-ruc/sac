@@ -9,7 +9,7 @@ CPPFLAGS += -I$(SMR_SSD_CACHE_DIR) -I$(SMR_SSD_CACHE_DIR)/smr-simulator -I$(SMR_
 
 RM = rm -rf
 #RMSHM = rm -f /dev/shm/*
-OBJS = global.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o daemon.o main.o costmodel.o pore_plus.o losertree4pore.o paul.o most.o most_rw.o lru_rw.o lru_private.o band_table.o smr-simulator.o inner_ssd_buf_table.o simulator_logfifo.o  simulator_v2.o
+OBJS = main.o global.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o daemon.o paul.o most.o most_cdc.o lru_cdc.o lru_private.o hashtb_pb.o simulator_v2.o
 
 
 all: $(OBJS) smr-ssd-cache
@@ -69,7 +69,7 @@ clock.o: strategy/clock.c
 most.o: strategy/most.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-most_rw.o: strategy/most_rw.c
+most_cdc.o: strategy/most_cdc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
 lru.o: strategy/lru.c
@@ -78,7 +78,7 @@ lru.o: strategy/lru.c
 lru_private.o: strategy/lru_private.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-lru_rw.o: strategy/lru_rw.c
+lru_cdc.o: strategy/lru_cdc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
 oldpore.o: strategy/oldpore.c
@@ -94,7 +94,7 @@ band_table.o: strategy/band_table.c
 smr-simulator.o: smr-simulator/smr-simulator.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-inner_ssd_buf_table.o: smr-simulator/inner_ssd_buf_table.c
+hashtb_pb.o: smr-simulator/hashtb_pb.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
 simulator_logfifo.o: smr-simulator/simulator_logfifo.c

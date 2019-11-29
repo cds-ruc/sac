@@ -1,5 +1,0 @@
-
-void initSSDCacheForLRU_UserDiff()
-{
-
-}

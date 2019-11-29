@@ -26,7 +26,28 @@ static void hit(Dscptr* desp, ZoneCtrl* zoneCtrl);
 static int redefineOpenZones();
 static ZoneCtrl* getEvictZone();
 static long stamp(Dscptr* desp);
+typedef struct Dscptr
+{
+    long            serial_id;
+    SSDBufTag       ssd_buf_tag;
+    unsigned 	    flag;
+    long            pre,next;
+    unsigned long   heat;
+    long     	    stamp;
+    unsigned long   zoneId;
+}Dscptr;
 
+typedef struct ZoneCtrl
+{
+    unsigned long   zoneId;
+    long            heat;
+    long            pagecnt_dirty;
+    long            pagecnt_clean;
+    long            head,tail;
+    int             activate_after_n_cycles;
+    unsigned long score;
+
+}ZoneCtrl;
 
 static volatile unsigned long
 getZoneNum(size_t offset)
@@ -38,7 +59,7 @@ getZoneNum(size_t offset)
 int
 Init_most()
 {
-    Cycle_Length = NBLOCK_SMR_FIFO;
+    Cycle_Length = NBLOCK_SMR_PB;
     StampGlobal = PeriodProgress = 0;
     IsNewPeriod = 0;
     GlobalDespArray = (Dscptr*)malloc(sizeof(Dscptr) * NBLOCK_SSD_CACHE);
