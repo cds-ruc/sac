@@ -1,0 +1,2 @@
+*.req filter=lfs diff=lfs merge=lfs -text
+“*.req” filter=lfs diff=lfs merge=lfs -text
