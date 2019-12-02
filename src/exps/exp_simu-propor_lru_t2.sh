@@ -1,6 +1,6 @@
 #!/bin/bash
 #Exp Content: 	SIMU; Different properity of SSD cache space for clean and dirty.
-#Setting:	undef NO_REAL_DISK_IO, SIMU_NO_DISK_IO; undef PORE_BATCH
+#Setting:	undef NO_REAL_DISK_IO, EMU_NO_DISK_IO; undef PORE_BATCH
 
 cache_blksize=(20595 24795 48167 19554 106230 65278 39736 51410 36268 43761)
 fifo_blksize=(3987 4941 9513 3754 21206 13054 7645 10273 6731 7451)

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <errno.h>
-extern void info(char* str);
-extern int usr_warning(char* str);
-extern void usr_error(char* str);
-extern int _Log(char* log, FILE* file);
+#include <stdarg.h>
+extern void paul_info(char* format, ...)
+extern int paul_warning(char* format, ...)
+extern void paul_error_exit(char* format, ...)
+extern int paul_log(char* log, FILE* file);
+extern void paul_exit(int flag); 

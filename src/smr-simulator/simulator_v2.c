@@ -13,6 +13,7 @@
 #include <memory.h>
 #include <aio.h>
 
+#include "../global.h"
 #include "../statusDef.h"
 #include "../report.h"
 #include "../cache.h"
@@ -23,7 +24,7 @@
 #define OFF_BAND_TMP_PERSISIT   0 // The head 80MB of FIFO for temp persistence band needed to clean.
 #define OFF_FIFO                80*1024*1024
 
-#ifdef SIMU_NO_DISK_IO
+#ifdef EMU_NO_DISK_IO
 #define DISK_READ(fd,buf,size,offset) (size)
 #define DISK_WRITE(fd,buf,size,offset) (size)
 #else
@@ -71,7 +72,6 @@ static double simu_time_write_fifo;
 
 static double simu_time_collectFIFO = 0; /** To monitor the efficent of read all blocks in same band **/
 
-static void* smr_fifo_monitor_thread();
 
 static int invalidDespInFIFO(FIFODesc* desp);
 #define isFIFOEmpty (global_fifo_ctrl.head == global_fifo_ctrl.tail)
@@ -85,14 +85,11 @@ static off_t getBandOffset(off_t blk_off);
 struct aiocb aiolist[max_aio_count];
 struct aiocb* aiocb_addr_list[max_aio_count];/* >= band block size */
 
-FILE* log_wa;
-char log_wa_path[] = "/home/fei/devel/logs/log_wa";
-
 
 /*
  * init inner ssd buffer hash table, strategy_control, buffer, work_mem
  */
-void InitSimulator()
+void InitEmulator()
 {
     /* initialliz related constants */
     band_size_num = (BNDSZ / 1024000) / 2 + 1;
@@ -134,32 +131,13 @@ void InitSimulator()
 
     initSSDTable(NBLOCK_SMR_PB + 1);
 
-    log_wa = fopen(log_wa_path, "w+");
-    if(log_wa == NULL)
-        usr_error("cannot open log: log_wa.");
-//    pthread_t tid;
-//    int err = pthread_create(&tid, NULL, smr_fifo_monitor_thread, NULL);
-//    if (err != 0)
-//    {
-//        printf("[ERROR] initSSD: fail to create thread: %s\n", strusr_warning(err));
-//        exit(-1);
-//    }
-    /* cgroup write fifo throttle */
-//    pid_t mypid = getpid();
-//    int bps_write = 1048576 * 11;
-//    char cmd_cg[512];c
-//
-//    int r;
-//    r = system("rm -rf /sys/fs/cgroup/blkio/smr_simu");
-//    r = system("mkdir /sys/fs/cgroup/blkio/smr_simu");
-//    sprintf(cmd_cg,"echo \"8:16 %d\" > /sys/fs/cgroup/blkio/smr_simu/blkio.throttle.write_bps_device",bps_write);
-//    r = system(cmd_cg);
-//    sprintf(cmd_cg,"echo %d > /sys/fs/cgroup/blkio/smr_simu/tasks",mypid);
-//    r = system(cmd_cg);
+    log_emu = fopen(log_emu_path, "w+");
+    if(log_emu == NULL)
+        paul_error_exit("cannot open log: log_emu.");
 }
 
 /** \brief
- *  To monitor the FIFO in SMR, and do cleanning operation when idle status.
+ *  LEGACY: To monitor the FIFO in SMR, and do cleanning operation when idle status.
  */
 static void*
 smr_fifo_monitor_thread()
@@ -372,7 +350,7 @@ flushFIFO()
         if (curDesp->isValid && (curDesp->tag.offset - thisBandOff) < thisBandSize && curDesp->tag.offset >= thisBandOff) 
         {
             off_t offset_inband = curDesp->tag.offset - thisBandOff;
-#ifdef SIMULATOR_AIO
+#ifdef EMULATION_AIO
             struct aiocb* aio_n = aiolist + aio_read_cnt;
             aio_n->aio_fildes = fd_fifo_part;
             aio_n->aio_offset = curPos * BLKSZ;
@@ -391,7 +369,7 @@ flushFIFO()
             }
             _TimerLap(&tv_stop);
             simu_time_read_fifo += TimerInterval_SECOND(&tv_start,&tv_stop);
-#endif // SIMULATOR_AIO
+#endif // EMULATION_AIO
             /* clean the meta data */
             dirty_n_inBand++;
             unsigned long hash_code = ssdtableHashcode(curDesp->tag);
@@ -407,8 +385,8 @@ flushFIFO()
         curPos = nextPos;
     }
     simu_n_collect_fifo += dirty_n_inBand;
-#ifdef SIMULATOR_AIO
-#ifndef SIMU_NO_DISK_IO
+#ifdef EMULATION_AIO
+#ifndef EMU_NO_DISK_IO
     _TimerLap(&tv_start);
     static int cnt = 0;
     printf("start aio read [%d]...\n",++cnt);
@@ -418,12 +396,12 @@ flushFIFO()
     {
         char log[128];
         sprintf(log,"Flush [%ld] times ERROR: AIO read list from FIFO Failure[%d].\n",simu_flush_bands+1,ret_aio);
-//        _Log(log);
+        paul_log(log, log_emu);
     }
     _TimerLap(&tv_stop);
     simu_time_read_fifo += TimerInterval_SECOND(&tv_start,&tv_stop);
-#endif // SIMU_NO_DISK_IO
-#endif // SIMULATOR_AIO
+#endif // EMU_NO_DISK_IO
+#endif // EMULATION_AIO
     /**--------------------------------------------------- **/
     _TimerLap(&tv_collect_stop);
     collect_time = TimerInterval_SECOND(&tv_collect_start, &tv_collect_stop);
@@ -452,9 +430,10 @@ flushFIFO()
     STT->n_RMW ++;
 
     char log[256];
-    sprintf(log,"%f\n", wtrAmp);
-    _Log(log, log_wa);
-    printf("SMIU: band-colect=%d, bandsize=%d\n", dirty_n_inBand,thisBandSize/4096);
+    sprintf(log,"[Emulator]: RMW number:%lu, write amplifcation:%f\n",STT->n_RMW, wtrAmp);
+    paul_log(log, log_emu);
+    sprintf(log,"[Emulator]: dirty blocks in band colect=%d, bandsize=%d\n", dirty_n_inBand,thisBandSize/BLKSZ);
+    paul_log(log, log_emu);
 }
 
 static unsigned long
@@ -486,8 +465,8 @@ getBandOffset(off_t blk_off)
 
 void Emu_PrintStatistic()
 {
-    printf("----------------SIMULATOR------------\n");
-#ifndef SIMU_NO_DISK_IO
+    printf("----------------EMULATION------------\n");
+#ifndef EMU_NO_DISK_IO
     printf("Time:\n");
     printf("Read FIFO:\t%lf\nWrite FIFO:\t%lf\nRead SMR:\t%lf\nFlush SMR:\t%lf\n",simu_time_read_fifo, simu_time_write_fifo, simu_time_read_smr, simu_time_write_smr);
     printf("Total I/O:\t%lf\n", simu_time_read_fifo+simu_time_write_fifo+simu_time_read_smr+simu_time_write_smr);
@@ -508,5 +487,5 @@ void Emu_ResetStatisic()
 
 void CloseSMREmu()
 {
-    fclose(log_wa);
+    fclose(log_emu);
 }

@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "statusdef.h": "c",
-        "simulator_logfifo.h": "c"
+        "simulator_logfifo.h": "c",
+        "report.h": "c",
+        "simulator_v2.h": "c"
     }
 }

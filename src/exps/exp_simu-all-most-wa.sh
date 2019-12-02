@@ -1,6 +1,6 @@
 #!/bin/bash
 #Exp Content: 	SIMU; small traces [LRU] WA
-#Setting:	define NO_REAL_DISK_IO, SIMU_NO_DISK_IO; undef PORE_BATCH
+#Setting:	define NO_REAL_DISK_IO, EMU_NO_DISK_IO; undef PORE_BATCH
 
 cache_blksize=500000 #2000MB cache size
 fifo_zonesize=30

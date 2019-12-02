@@ -26,7 +26,6 @@ static volatile void *moveToLRUHead(StrategyDesp_LRU_private * ssd_buf_hdr_for_l
 int
 initSSDBufferFor_LRU_private()
 {
-    //STT->cacheLimit = Param1;
     int stat = multi_SHM_lock_n_check("LOCK_SSDBUF_STRATEGY_LRU");
     if(stat == 0)
     {

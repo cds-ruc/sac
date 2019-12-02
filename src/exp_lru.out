@@ -522,7 +522,7 @@ current run time: 1567
  Cache Proportion(R/W): [0/49982]
  wt_hit_rd: 0
  rd_hit_wt: 0
-----------------SIMULATOR------------
+----------------EMULATION------------
 Time:
 Read FIFO:	2.120102
 Write FIFO:	2.387763

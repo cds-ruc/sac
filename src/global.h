@@ -2,9 +2,7 @@
 #define _GLOBAL_H 1
 
 #include <sys/types.h>
-
 #include "statusDef.h"
-
 
 #define SSD_BUF_VALID 0x01
 #define SSD_BUF_DIRTY 0x02
@@ -15,8 +13,8 @@ struct RuntimeSTAT
     unsigned int batchId;
     unsigned int userId;
     unsigned int traceId;
+    int workload_mode; 
     unsigned long startLBA;
-    unsigned int isWriteOnly;
     unsigned long trace_req_amount;
     /** Runtime strategy refered parameter **/
     //union StratetyUnion strategyRef;
@@ -59,11 +57,10 @@ struct RuntimeSTAT
 
 typedef enum enum_workload_mode
 {
-    R, // 0
-    W, // 1
-    RW // 2 *default
+    IOMODE_R, // 0
+    IOMODE_W, // 1
+    IOMODE_RW // 2 *default
 }enum_workload_mode;
-extern enum workload_mode Workload_Mode;
 
 typedef enum
 {
@@ -75,60 +72,64 @@ typedef enum
     LRU_CDC
 }SSDEvictionStrategy;
 
+
 /** This user basic info */
-extern int BatchId;
-extern int UserId;
-extern int TraceId;
-extern off_t StartLBA;
-extern int WriteOnly;
-extern SSDEvictionStrategy EvictStrategy;
-extern unsigned long Param1;
-extern unsigned long Param2;
-extern int BatchSize;
-extern long Cycle_Length;
-/** All users basic setup **/
-extern blkcnt_t NBLOCK_SSD_CACHE;
-extern blkcnt_t NTABLE_SSD_CACHE;
-extern blkcnt_t NBLOCK_SMR_PB;
-//extern blkcnt_t NSMRBands;		// 194180*(18MB+36MB)/2~5TB
-//extern blkcnt_t NSMRBlocks;		// 2621952*8KB~20GB
-//extern blkcnt_t NSSDs;
-extern blkcnt_t NSSDTables;
-extern  blksize_t BLKSZ;
-extern  blkcnt_t  NZONES;
-extern  blksize_t ZONESZ;
+int TraceID = -1;
+FILE* TraceFile = NULL;
+off_t StartLBA = 0;
+enum enum_workload_load Workload_Mode = IOMODE_RW; // *Default
+SSDEvictionStrategy EvictStrategy = PAUL; // *Default
+long Cycle_Length;
 
-extern char simu_smr_fifo_device[];
-extern char simu_smr_smr_device[];
-extern char smr_device[];
-extern char ssd_device[];
-extern char ram_device[1024];
+int NO_REAL_DISK_IO = 0;
+int NO_CACHE = 0;
+int EMULATION = 0;
 
-extern int BandOrBlock;
+/** ENV**/
+struct RuntimeSTAT* STT;
+blksize_t BLKSZ = 4096;
 
-/*Block = 0, Band=1*/
-extern int hdd_fd;
-extern int ssd_fd;
-extern int ram_fd;
-extern struct RuntimeSTAT* STT;
+// Cache Layer
+blksize_t NBLOCK_SSD_CACHE = 8000000; // 32GB
+blksize_t NTABLE_SSD_CACHE; // equal with NBLOCK_SSD_CACHE
+
+// SMR layer
+blksize_t NBLOCK_SMR_PB = 30 * 5000;
+blkcnt_t  NZONES = 400000;/* size = 8TB */ //194180;    // NZONES * ZONESZ =
+blksize_t ZONESZ = 5000 * 4096;//20MB    // Unit: Byte.
+
+// Device Files
+char* simu_smr_fifo_device = NULL;// "/mnt/smr/pb";
+char* simu_smr_smr_dev_path = NULL;//"/mnt/smr/smr";
+char* smr_dev_path = NULL;//"/mnt/smr/smr-rawdisk"; // /dev/sdc";
+char* cache_dev_path = NULL;//"/mnt/ssd/ssd";//"/mnt/ramdisk/ramdisk";//"/dev/memdiska";// "/mnt/ssd/ssd";
+
+int cache_fd = -1;
+int smr_fd = -1;
+
+/* Logs */
+char* PATH_LOG = "../logs/";
+
+char log_emu_path[] = "../../logs/log_emu";
+FILE* log_emu;
 
 /** Shared memory variable names **/
-extern char* SHM_SSDBUF_STRATEGY_CTRL;
-extern char* SHM_SSDBUF_STRATEGY_DESP;
+// Note: They are legacy from multi-user version, and are not used in this code. 
+char* SHM_SSDBUF_STRATEGY_CTRL = "SHM_SSDBUF_STRATEGY_CTRL";
+char* SHM_SSDBUF_STRATEGY_DESP = "SHM_SSDBUF_STRATEGY_DESP";
 
-extern char* SHM_SSDBUF_DESP_CTRL;
-extern char* SHM_SSDBUF_DESPS;
+char* SHM_SSDBUF_DESP_CTRL = "SHM_SSDBUF_DESP_CTRL";
+char* SHM_SSDBUF_DESPS = "SHM_SSDBUF_DESPS";
 
-extern char* SHM_SSDBUF_HASHTABLE_CTRL;
-extern  char* SHM_SSDBUF_HASHTABLE;
-extern char* SHM_SSDBUF_HASHDESPS;
-extern char* SHM_PROCESS_REQ_LOCK;
-
-extern char* PATH_LOG;
-
-/** Pipes for HRC processes **/
-extern int PipeEnds_of_MAIN[];
-extern int PipeEnd_of_HRC;
-extern pid_t Fork_Pid; /* Default 0. If is a HRC process, this must be large than 0 */
-#define I_AM_HRC_PROC Fork_Pid
+char* SHM_SSDBUF_HASHTABLE_CTRL = "SHM_SSDBUF_HASHTABLE_CTRL";
+char* SHM_SSDBUF_HASHTABLE = "SHM_SSDBUF_HASHTABLE";
+char* SHM_SSDBUF_HASHDESPS =  "SHM_SSDBUF_HASHDESPS";
+char* SHM_PROCESS_REQ_LOCK = "SHM_PROCESS_REQ_LOCK";
 #endif
+
+
+
+
+
+
+

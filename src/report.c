@@ -4,29 +4,34 @@
 #include "unistd.h"
 #include <stdlib.h>
 FILE* LogFile;
-void info(char* str)
+void paul_info(char* format, ...)
 {
-    printf("process [%d]: %s\n",getpid(),str);
+    printf("process [%d]: ",getpid());
+    printf(format);
 }
 
-int usr_warning(char* str)
+int paul_warning(char* format, ...)
 {
-    printf("process [%d]: %s, errno: %d\n",getpid(),str, errno);
+    printf("process [%d], errno: %d:",getpid(), errno);
+    printf(format);
     return errno;
 }
 
-void usr_error(char* str)
+void paul_error_exit(char* format, ...)
 {
-    printf("process [%d]: %s, errno: %d\n",getpid(),str, errno);
+    printf("process [%d], errno: %d:",getpid(), errno);
+    printf(format);
     exit(EXIT_FAILURE);
 }
 
-int warnning(char* str)
+
+void paul_exit(int flag)
 {
-    printf("process [%d]: %s\n",getpid(),str);
+    exit(flag);
 }
 
-int _Log(char* log, FILE* file)
+
+int paul_log(char* log, FILE* file)
 {
 #ifdef LOG_ALLOW
     return fwrite(log,strlen(log),1,file);

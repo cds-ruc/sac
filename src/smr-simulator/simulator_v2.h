@@ -1,5 +1,5 @@
-#ifndef SMR_SSD_CACHE_SMR_SIMULATOR_H
-#define SMR_SSD_CACHE_SMR_SIMULATOR_H
+#ifndef SMR_SSD_CACHE_SMR_EMULATION_H
+#define SMR_SSD_CACHE_SMR_EMULATION_H
 
 #include "../global.h"
 #include "../statusDef.h"
@@ -28,7 +28,7 @@ typedef struct
 
 extern int  fd_fifo_part;
 extern int  fd_smr_part;
-extern void InitSimulator();
+extern void InitEmulator();
 extern int simu_smr_read(char *buffer, size_t size, off_t offset);
 extern int simu_smr_write(char *buffer, size_t size, off_t offset);
 extern void Emu_PrintStatistic();

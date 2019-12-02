@@ -238,7 +238,7 @@ LogOut_PAUL(long * out_despid_array, int max_n_batch, enum_t_vict suggest_type)
     if(suggest_type == ENUM_B_Clean)
     {
         if(CleanCtrl.pagecnt_clean == 0 || WhoEvict_Now == EP_Dirty) // Consistency judgment
-            usr_error("Illegal to evict CLEAN cache.");
+            paul_error_exit("Illegal to evict CLEAN cache.");
 
         if(WhoEvict_Now == EP_Reset)
         {
@@ -249,7 +249,7 @@ LogOut_PAUL(long * out_despid_array, int max_n_batch, enum_t_vict suggest_type)
     else if(suggest_type == ENUM_B_Dirty)
     {
         if(STT->incache_n_dirty == 0 || WhoEvict_Now == EP_Clean )   // Consistency judgment
-            usr_error("Illegal to evict DIRTY cache.");
+            paul_error_exit("Illegal to evict DIRTY cache.");
 
 
         if(WhoEvict_Now == EP_Reset){
@@ -278,7 +278,7 @@ LogOut_PAUL(long * out_despid_array, int max_n_batch, enum_t_vict suggest_type)
         }
     }
     else
-        usr_error("PAUL catched an unsupported eviction type.");
+        paul_error_exit("PAUL catched an unsupported eviction type.");
 
 FLAG_EVICT_CLEAN:
     while(evict_cnt < EVICT_DITRY_GRAIN && CleanCtrl.pagecnt_clean > 0)
@@ -301,7 +301,7 @@ FLAG_EVICT_CLEAN:
 
 FLAG_EVICT_DIRTYZONE:
     if((CurEvictZoneSeq = get_FrozenOpZone_Seq()) < 0)
-        usr_error("FLAG_EVICT_DIRTYZONE error");
+        paul_error_exit("FLAG_EVICT_DIRTYZONE error");
     evictZone = ZoneCtrl_pualArray + OpenZoneSet[CurEvictZoneSeq];
 
     while(evict_cnt < EVICT_DITRY_GRAIN && evictZone->pagecnt_dirty > 0)
@@ -338,7 +338,7 @@ FLAG_EVICT_DIRTYZONE:
 static EvictPhrase_t run_cm_alpha()
 {
     if(STT->incache_n_dirty == 0 || STT->incache_n_clean == 0)
-        usr_error("Illegal to run CostModel:alpha");
+        paul_error_exit("Illegal to run CostModel:alpha");
 
     /* Get number of dirty OODs. NOTICE! Have to get the dirty first and then the clean, the order cannot be reverted.*/
     int zoneid;
@@ -574,7 +574,7 @@ static double redefineOpenZones()
     struct blk_cm_info cm_drt[100];
     NonEmptyZoneCnt = extractNonEmptyZoneId(); // >< #ugly way.
     if(NonEmptyZoneCnt == 0)
-        usr_error("There are no zone for open.");
+        paul_error_exit("There are no zone for open.");
     pause_and_score(); /** ARS (Actually Release Space) */
     qsort_zone(0,NonEmptyZoneCnt-1);
 
@@ -600,7 +600,7 @@ static double redefineOpenZones()
             k++;
         }
         else if(zone->activate_after_n_cycles > 0)
-            //info("PAUL FILTERS A REPEAT ZONE.");
+            //paul_info("PAUL FILTERS A REPEAT ZONE.");
         i++;
     }
 

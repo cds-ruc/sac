@@ -30,11 +30,8 @@
     #define multi_SHM_mutex_unlock(lock)        //SHM_mutex_unlock(lock)
 #endif // MULTIUSER
 
-#define bool    unsigned char
+//#define bool unsigned char
 
-#ifdef CACHE_PROPORTIOIN_STATIC
-extern double Proportion_Dirty;
-#endif // CACHE_PROPORTIOIN_STATIC
 
 typedef struct
 {
@@ -73,8 +70,6 @@ extern void read_block(off_t offset, char* ssd_buffer);
 extern void write_block(off_t offset, char* ssd_buffer);
 extern void read_band(off_t offset, char* ssd_buffer);
 extern void write_band(off_t offset, char* ssd_buffer);
-//extern bool isSamebuf(SSDBufTag *, SSDBufTag *);
-extern int ResizeCacheUsage();
 extern void CopySSDBufTag(SSDBufTag* objectTag, SSDBufTag* sourceTag);
 
 extern void _LOCK(pthread_mutex_t* lock);

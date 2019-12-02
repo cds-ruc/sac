@@ -12,5 +12,4 @@
 
 extern FILE *log_lat, *log_lat_pb;
 
-extern void trace_to_iocall(char *trace_file_path, int isWriteOnly, off_t startLBA);
-extern int BandOrBlock;
+extern void trace_to_iocall(FILE * trace, off_t startLBA);
