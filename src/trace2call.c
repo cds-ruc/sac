@@ -13,7 +13,7 @@
 #include "trace2call.h"
 #include "report.h"
 #include "strategy/strategies.h"
-#include "smr-simulator/simulator_v2.h"
+#include "smr-emulator/emulator_v2.h"
 
 //#include "/home/fei/git/Func-Utils/pipelib.h"
 #include "hrc.h"

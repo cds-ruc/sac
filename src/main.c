@@ -16,7 +16,7 @@
 #include "shmlib.h"
 #include "global.h"
 #include "cache.h"
-#include "smr-simulator/simulator_v2.h"
+#include "smr-emulator/emulator_v2.h"
 #include "trace2call.h"
 #include "daemon.h"
 #include "timerUtils.h"

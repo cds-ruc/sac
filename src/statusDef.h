@@ -2,7 +2,12 @@
  * Configure file of SSD-SMR cache system.
  * All the switch is turn-off by default.
  */
-/** configure of system structure **/
+
+/** ENV **/
+#define PROJ_ROOT 
+#define PATH_LOG  
+#define PATH_SRC 
+#define PATH_EMU
 
 
 /** Log reporting level **/

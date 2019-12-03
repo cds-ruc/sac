@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "inner_ssd_buf_table.h"
-#include "simulator_v2.h"
+#include "emulator_v2.h"
 #include "../cache.h"
 
 static SSDHashBucket* HashTable;

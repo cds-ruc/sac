@@ -1,7 +1,7 @@
 #ifndef SSDBUFTABLE_H
 #define SSDBUFTABLE_H
 
-#include "simulator_v2.h"
+#include "emulator_v2.h"
 typedef struct SSDHashBucket
 {
         DespTag	hash_key;

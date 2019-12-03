@@ -10,7 +10,7 @@
 
 #include "strategy/strategies.h"
 
-#include "smr-simulator/simulator_v2.h"
+#include "smr-emulator/emulator_v2.h"
 
 #include "shmlib.h"
 #include "report.h"

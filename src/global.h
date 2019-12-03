@@ -108,8 +108,7 @@ int cache_fd = -1;
 int smr_fd = -1;
 
 /* Logs */
-char* PATH_LOG = "../logs/";
-
+char* PATH_LOG = PROJ_ROOT + "/logs/";
 char log_emu_path[] = "../../logs/log_emu";
 FILE* log_emu;
 
