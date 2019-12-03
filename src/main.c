@@ -164,7 +164,7 @@ int analyze_opts(int argc, char **argv)
         case 'C': // cache-dev
             cache_dev_path = optarg;
             if((cache_fd = open(cache_dev_path, O_RDWR | O_DIRECT)) < 0){
-                paul_error_exit("Unable to open cache device file: %s", cache_dev_path);
+                paul_error_exit("Unable to open CACHE device file: %s", cache_dev_path);
             }
             printf("[User Setting] Cache device file: %s\n\t(You can still use ramdisk or memory fs for testing.)\n", cache_dev_path);
             break;
@@ -172,7 +172,7 @@ int analyze_opts(int argc, char **argv)
         case 'S': // SMR-dev
             smr_dev_path = optarg;
             if((smr_fd = open(smr_dev_path, O_RDWR | O_DIRECT)) < 0){
-                paul_error_exit("Unable to open cache device file: %s", smr_dev_path);
+                paul_error_exit("Unable to open SMR device file: %s", smr_dev_path);
             }
             printf("[User Setting] SMR device file: %s\n\t(You can still use conventional hard drives for testing.)\n", optarg);
             break;
@@ -250,16 +250,6 @@ int initRuntimeInfo()
 
 int main(int argc, char **argv)
 {
-    // 1 1 1 0 0 100000 100000
-    // 1 1 0 0 0 100000 100000
-    //0 11 1 0 8000000 8000000 30 PAUL -1
-
-    FILE* fd1 = fopen("./logs/test.log", "w+");
-    if(fd1 == NULL)
-        paul_error_exit("cannot open log: Log_emu.");
-
-    return 0;
-    
     analyze_opts(argc, argv);
 
     /* Open Device */

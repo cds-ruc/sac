@@ -4,7 +4,7 @@
 #include "../global.h"
 #include"../shmlib.h"
 #include "lru_private.h"
-#include "LRU_CDC.h"
+#include "lru_cdc.h"
 
 
 #define EVICT_DITRY_GRAIN 64
