@@ -1,5 +1,6 @@
 /*
-    Writed by Sun Diansen.
+    Writed by Sun, Diansen.  <2019.12>, email: diansensun@gmail.com
+    
     This file provides utilities for share memory operation based on POSIX Share Memory.
     To untilize without error, you might add "-lrt" option onto the linker.
 */

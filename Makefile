@@ -3,14 +3,17 @@ CC = gcc -g -g
 ifndef PAUL_ROOT
 PAUL_ROOT=.
 PAUL_SRC=${PAUL_ROOT}/src
+PAUL_ALG=${PAUL_SRC}/strategy
+PAUL_EMU=${PAUL_SRC}/smr-emulator
+
 endif
 
-CFLAGS += -Wall -pthread
+CFLAGS += -Wall -pthread 
 CPPFLAGS += -I$(PAUL_ROOT) -I$(PAUL_SRC) -I$(PAUL_SRC)/smr-emulator -I$(PAUL_SRC)/strategy
 
 RM = rm -rf
 #RMSHM = rm -f /dev/shm/* 
-OBJS = main.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o paul.o most.o most_cdc.o lru_cdc.o lru_private.o hashtb_pb.o emulator_v2.o
+OBJS = global.o main.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o paul.o most.o most_cdc.o lru_cdc.o lru_private.o hashtb_pb.o emulator_v2.o
 
 
 all: $(OBJS) smr-ssd-cache
@@ -18,50 +21,52 @@ all: $(OBJS) smr-ssd-cache
 
 smr-ssd-cache:
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -lrt -lm -o $@
-
-report.o: report.c
+global.o: ${PAUL_SRC}/global.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-shmlib.o: shmlib.c
+report.o: ${PAUL_SRC}/report.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-timerUtils.o: timerUtils.c
+shmlib.o: ${PAUL_SRC}/shmlib.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-hashtable_utils.o: hashtable_utils.c
+timerUtils.o: ${PAUL_SRC}/timerUtils.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-cahce.o: cache.c
+hashtable_utils.o: ${PAUL_SRC}/hashtable_utils.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-trace2call.o: trace2call.c
+cache.o: ${PAUL_SRC}/cache.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-main.o: main.c
+trace2call.o: ${PAUL_SRC}/trace2call.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-paul.o: strategy/paul.c
+main.o: ${PAUL_SRC}/main.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-most.o: strategy/most.c
+paul.o: ${PAUL_ALG}/paul.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-most_cdc.o: strategy/most_cdc.c
+most.o: ${PAUL_ALG}/most.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-lru.o: strategy/lru.c
+most_cdc.o: ${PAUL_ALG}/most_cdc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-lru_private.o: strategy/lru_private.c
+lru.o: ${PAUL_ALG}/lru.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-lru_cdc.o: strategy/lru_cdc.c
+lru_private.o: ${PAUL_ALG}/lru_private.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-hashtb_pb.o: smr-emulator/hashtb_pb.c
+lru_cdc.o: ${PAUL_ALG}/lru_cdc.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-simulator_v2.o: smr-emulator/emulator_v2.c
+hashtb_pb.o: ${PAUL_EMU}/hashtb_pb.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
+
+emulator_v2.o: ${PAUL_EMU}/emulator_v2.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
 clean:

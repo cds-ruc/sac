@@ -3,6 +3,7 @@
         "statusdef.h": "c",
         "simulator_logfifo.h": "c",
         "report.h": "c",
-        "emulator_v2.h": "c"
+        "emulator_v2.h": "c",
+        "global.h": "c"
     }
 }

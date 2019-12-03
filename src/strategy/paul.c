@@ -64,13 +64,9 @@ struct blk_cm_info
     int num_totalblks;
 };
 
-
-
 /** PAUL**/
 static double redefineOpenZones();
 static int get_FrozenOpZone_Seq();
-static int random_pick (float weight1, float weight2, float obey);
-static int restart_cm_alpha();
 
 typedef enum EvictPhrase_t
 {
@@ -297,7 +293,7 @@ FLAG_EVICT_CLEAN:
     }
 
     if(CleanCtrl.pagecnt_clean == 0 || (Num_evict_clean_cycle >= NumEvict_thistime_apprx)){
-        printf(">> Output of last Cycle[%ld]: clean:%ld, dirty:%ld\n",CycleID,Num_evict_clean_cycle,Num_evict_dirty_cycle);
+        printf(">> Output of last Cycle[%ld]: clean:%d, dirty:%d\n",CycleID,Num_evict_clean_cycle,Num_evict_dirty_cycle);
 	Num_evict_clean_cycle = 0;
         WhoEvict_Now = EP_Reset;
     }
@@ -326,7 +322,7 @@ FLAG_EVICT_DIRTYZONE:
     /* If end the dirty eviction */
     if((CurEvictZoneSeq = get_FrozenOpZone_Seq()) < 0){
         /* End and set the eviction type to *Unknown*. */
-        printf(">> Output of last Cycle[%ld]: clean:%ld, dirty:%ld\n",CycleID,Num_evict_clean_cycle,Num_evict_dirty_cycle);
+        printf(">> Output of last Cycle[%ld]: clean:%d, dirty:%d\n",CycleID,Num_evict_clean_cycle,Num_evict_dirty_cycle);
 
         Num_evict_dirty_cycle = 0;
         Cycle_Progress = 0;
@@ -579,7 +575,6 @@ pause_and_score()
     ZoneCtrl_pual* izone;
     Dscptr_paul* desp;
     blkcnt_t n = 0;
-
 }
 
 

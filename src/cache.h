@@ -30,8 +30,6 @@
     #define multi_SHM_mutex_unlock(lock)        //SHM_mutex_unlock(lock)
 #endif // MULTIUSER
 
-//#define bool unsigned char
-
 
 typedef struct
 {

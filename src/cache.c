@@ -23,12 +23,12 @@ SSDBufDesp *ssd_buf_desps;
 static int init_SSDDescriptorBuffer();
 static int init_StatisticObj();
 static void flushSSDBuffer(SSDBufDesp *ssd_buf_hdr);
-static SSDBufDesp *allocSSDBuf(SSDBufTag ssd_buf_tag, bool *found, int alloc4What, int *isCallBack);
+static SSDBufDesp *allocSSDBuf(SSDBufTag ssd_buf_tag, int *found, int alloc4What);
 static SSDBufDesp *pop_freebuf();
 static int push_freebuf(SSDBufDesp *freeDesp);
 
 static int initStrategySSDBuffer();
-static long Strategy_Desp_LogOut();
+// static long Strategy_Desp_LogOut();
 static int Strategy_Desp_HitIn(SSDBufDesp *desp);
 static int Strategy_Desp_LogIn(SSDBufDesp *desp);
 //#define isSamebuf(SSDBufTag tag1, SSDBufTag tag2) (tag1 == tag2)
@@ -41,8 +41,8 @@ void _UNLOCK(pthread_mutex_t *lock);
 
 /* stopwatch */
 static timeval tv_start, tv_stop;
-static timeval tv_bastart, tv_bastop;
-static timeval tv_cmstart, tv_cmstop;
+// static timeval tv_bastart, tv_bastop;
+// static timeval tv_cmstart, tv_cmstop;
 int IsHit;
 microsecond_t msec_r_hdd, msec_w_hdd, msec_r_ssd, msec_w_ssd, msec_bw_hdd = 0;
 
@@ -68,12 +68,12 @@ void CacheLayer_Init()
     int r_initstt = init_StatisticObj();
 
     printf("init_Strategy: %d, init_table: %d, init_desp: %d, inti_Stt: %d\n",
-           r_initstrategybuf, r_initbuftb, r_initdesp, r_initstt,);
+           r_initstrategybuf, r_initbuftb, r_initdesp, r_initstt);
 
     if (r_initdesp == -1 || r_initstrategybuf == -1 || r_initbuftb == -1 || r_initstt == -1)
         exit(EXIT_FAILURE);
 
-    int returnCode = posix_memalign(&ssd_buffer, 512, sizeof(char) * BLKSZ);
+    int returnCode = posix_memalign((void **)&ssd_buffer, 512, sizeof(char) * BLKSZ);
     if (returnCode < 0)
     {
         printf("[ERROR] flushSSDBuffer():--------posix memalign\n");
@@ -146,7 +146,7 @@ flushSSDBuffer(SSDBufDesp *ssd_buf_hdr)
     if (IsClean(ssd_buf_hdr->ssd_buf_flag))
     {
         STT->flush_clean_blocks++;
-        CM_Reg_EvictBlk(ssd_buf_hdr->ssd_buf_tag, ssd_buf_hdr->ssd_buf_flag, 0);
+        //        CM_Reg_EvictBlk(ssd_buf_hdr->ssd_buf_tag, ssd_buf_hdr->ssd_buf_flag, 0);
         return;
     }
 
@@ -164,12 +164,12 @@ flushSSDBuffer(SSDBufDesp *ssd_buf_hdr)
     STT->time_write_hdd += Mirco2Sec(msec_w_hdd);
     STT->flush_hdd_blocks++;
 
-    CM_Reg_EvictBlk(ssd_buf_hdr->ssd_buf_tag, ssd_buf_hdr->ssd_buf_flag, msec_w_hdd + msec_r_ssd);
+    //CM_Reg_EvictBlk(ssd_buf_hdr->ssd_buf_tag, ssd_buf_hdr->ssd_buf_flag, msec_w_hdd + msec_r_ssd);
 
     static char log[256];
     static unsigned long cnt = 0;
     cnt++;
-    sprintf(log, "%ld, %ld\n", cnt, msec_w_hdd);
+    sprintf(log, "%ld, %d\n", cnt, msec_w_hdd);
     paul_log(log, log_lat_pb);
 }
 
@@ -184,7 +184,7 @@ static void flagOp(SSDBufDesp *ssd_buf_hdr, int opType)
 }
 
 static SSDBufDesp *
-allocSSDBuf(SSDBufTag ssd_buf_tag, bool *found, int alloc4What, int *isCallBack)
+allocSSDBuf(SSDBufTag ssd_buf_tag, int *found, int alloc4What)
 {
 
     /* Lookup if already cached. */
@@ -219,7 +219,7 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, bool *found, int alloc4What, int *isCallBack)
 
     /* Cache MISS */
     *found = 0;
-    *isCallBack = CM_TryCallBack(ssd_buf_tag);
+    //*isCallBack = CM_TryCallBack(ssd_buf_tag);
     enum_t_vict suggest_type = ENUM_B_Any;
 
     /* When there is NO free SSD space for cache, 
@@ -245,7 +245,7 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, bool *found, int alloc4What, int *isCallBack)
             n_evict = LogOut_most(buf_despid_array, max_n_batch);
             break;
         case MOST_CDC:
-            n_evict = LogOut_most_rw(buf_despid_array, max_n_batch, suggest_type);
+            n_evict = LogOut_most_cdc(buf_despid_array, max_n_batch, suggest_type);
             break;
         case LRU_private:
             n_evict = Unload_Buf_LRU_private(buf_despid_array, max_n_batch);
@@ -312,29 +312,32 @@ initStrategySSDBuffer()
     case MOST:
         return Init_most();
     case MOST_CDC:
-        return Init_most_rw();
+        return Init_most_cdc();
     }
     return -1;
 }
 
-static long
-Strategy_Desp_LogOut(unsigned flag)
-{
-    STT->cacheUsage--;
-    switch (EvictStrategy)
-    {
-        //        case LRU_global:        return Unload_LRUBuf();
-    case LRU_private:
-        paul_warning("LRU wrong time function revoke, please use BATHCH configure.\n");
-    case LRU_CDC:
-        paul_warning("LRU_CDC wrong time function revoke\n");
-    case PAUL:
-        paul_warning("PAUL wrong time function revoke\n");
-    case MOST:
-        paul_warning("MOST wrong time function revoke\n");
-    }
-    return -1;
-}
+
+// static long
+// Strategy_Desp_LogOut(unsigned flag)  // LEGACY
+// {
+//     STT->cacheUsage--;
+//     switch (EvictStrategy)
+//     {
+//         //        case LRU_global:        return Unload_LRUBuf();
+//     case LRU_private:
+//         paul_warning("LRU wrong time function revoke, please use BATHCH configure.\n");
+//     case LRU_CDC:
+//         paul_warning("LRU_CDC wrong time function revoke\n");
+//     case PAUL:
+//         paul_warning("PAUL wrong time function revoke\n");
+//     case MOST:
+//         paul_warning("MOST wrong time function revoke\n");
+//     case MOST_CDC:
+//         paul_warning("MOST_CDC wrong time functioFn revoke\n");
+//     }
+//     return -1;
+// }
 
 static int
 Strategy_Desp_HitIn(SSDBufDesp *desp)
@@ -346,22 +349,12 @@ Strategy_Desp_HitIn(SSDBufDesp *desp)
         return hitInBuffer_LRU_private(desp->serial_id);
     case LRU_CDC:
         return hitInBuffer_LRU_CDC(desp->serial_id, desp->ssd_buf_flag);
-        //        case LRU_batch:         return hitInBuffer_LRU_batch(desp->serial_id);
-        //        case Most:              return HitMostBuffer();
-        //    case PORE:
-        //        return HitPoreBuffer(desp->serial_id, desp->ssd_buf_flag);
-        //    case PORE_PLUS:
-        //        return HitPoreBuffer_plus(desp->ssd_buf_flag, desp->ssd_buf_flag);
-        //    case PORE_PLUS_V2:
-        //        return Hit_poreplus_v2(desp->serial_id, desp->ssd_buf_flag);
     case PAUL:
         return Hit_PAUL(desp->serial_id, desp->ssd_buf_flag);
-        //    case OLDPORE:
-        //        return Hit_oldpore(desp->serial_id, desp->ssd_buf_flag);
     case MOST:
         return Hit_most(desp->serial_id, desp->ssd_buf_flag);
     case MOST_CDC:
-        return Hit_most_rw(desp->serial_id, desp->ssd_buf_flag);
+        return Hit_most_cdc(desp->serial_id, desp->ssd_buf_flag);
     }
     return -1;
 }
@@ -393,7 +386,7 @@ Strategy_Desp_LogIn(SSDBufDesp *desp)
     case MOST:
         return LogIn_most(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
     case MOST_CDC:
-        return LogIn_most_rw(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
+        return LogIn_most_cdc(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
     }
     return -1;
 }
@@ -417,9 +410,8 @@ void read_block(off_t offset, char *ssd_buffer)
         return;
     }
 
-    _TimerLap(&tv_cmstart);
-    bool found = 0;
-    int isCallBack;
+    // _TimerLap(&tv_cmstart);
+    int found = 0;
     static SSDBufTag ssd_buf_tag;
     static SSDBufDesp *ssd_buf_hdr;
 
@@ -427,7 +419,7 @@ void read_block(off_t offset, char *ssd_buffer)
     if (DEBUG)
         printf("[INFO] read():-------offset=%lu\n", offset);
 
-    ssd_buf_hdr = allocSSDBuf(ssd_buf_tag, &found, 0, &isCallBack);
+    ssd_buf_hdr = allocSSDBuf(ssd_buf_tag, &found, 0);
 
     IsHit = found;
     if (found)
@@ -450,13 +442,13 @@ void read_block(off_t offset, char *ssd_buffer)
         STT->time_read_hdd += Mirco2Sec(msec_r_hdd);
         STT->load_hdd_blocks++;
         /* ----- Cost Model Reg------------- */
-        if (isCallBack)
-        {
-            CM_T_rand_Reg(msec_r_hdd);
-        }
-        _TimerLap(&tv_cmstop);
-        microsecond_t miss_usetime = TimerInterval_MICRO(&tv_cmstart, &tv_cmstop);
-        CM_T_hitmiss_Reg(miss_usetime);
+        // if (isCallBack)
+        // {
+        //     CM_T_rand_Reg(msec_r_hdd);
+        // }
+        // _TimerLap(&tv_cmstop);
+        // microsecond_t miss_usetime = TimerInterval_MICRO(&tv_cmstart, &tv_cmstop);
+        // CM_T_hitmiss_Reg(miss_usetime);
         /* ------------------ */
 
         dev_pwrite(cache_fd, ssd_buffer, BLKSZ, ssd_buf_hdr->ssd_buf_id * BLKSZ);
@@ -486,24 +478,24 @@ void write_block(off_t offset, char *ssd_buffer)
         return;
     }
 
-    _TimerLap(&tv_cmstart);
-    bool found;
-    int isCallBack;
+    // _TimerLap(&tv_cmstart);
+    int found;
+    // int isCallBack;
     static SSDBufTag ssd_buf_tag;
     static SSDBufDesp *ssd_buf_hdr;
 
     ssd_buf_tag.offset = offset;
-    ssd_buf_hdr = allocSSDBuf(ssd_buf_tag, &found, 1, &isCallBack);
+    ssd_buf_hdr = allocSSDBuf(ssd_buf_tag, &found, 1);
 
     //if(!found && isCallBack)
-    if (!found)
-    {
-        /* ----- Cost Model Reg------------- */
-        _TimerLap(&tv_cmstop);
-        microsecond_t miss_usetime = TimerInterval_MICRO(&tv_cmstart, &tv_cmstop);
-        CM_T_hitmiss_Reg(miss_usetime);
-        /* ------------------ */
-    }
+    // if (!found)
+    // {
+    //     /* ----- Cost Model Reg------------- */
+    //     // _TimerLap(&tv_cmstop);
+    //     // microsecond_t miss_usetime = TimerInterval_MICRO(&tv_cmstart, &tv_cmstop);
+    //     // CM_T_hitmiss_Reg(miss_usetime);
+    //     /* ------------------ */
+    // }
 
     IsHit = found;
     STT->hitnum_w += IsHit;

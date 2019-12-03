@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "inner_ssd_buf_table.h"
+#include "hashtb_pb.h"
 #include "emulator_v2.h"
 #include "../cache.h"
 

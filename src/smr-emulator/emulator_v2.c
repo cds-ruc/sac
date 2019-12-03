@@ -52,7 +52,7 @@ static long	band_size_num;
 static long	num_each_size;
 
 static FIFODesc* getFIFODesp();
-static void* smr_fifo_monitor_thread();
+// static void* smr_fifo_monitor_thread();
 static void flushFIFO();
 
 static long simu_read_smr_bands;
@@ -98,7 +98,7 @@ void InitEmulator()
     global_fifo_ctrl.n_used = 0;
     global_fifo_ctrl.head = global_fifo_ctrl.tail = 0;
 
-    posix_memalign(&fifo_desp_array, 1024,sizeof(FIFODesc) * (NBLOCK_SMR_PB + 1));
+    posix_memalign((void**) &fifo_desp_array, 1024,sizeof(FIFODesc) * (NBLOCK_SMR_PB + 1));
 
 
     FIFODesc* fifo_hdr = fifo_desp_array;
@@ -109,7 +109,7 @@ void InitEmulator()
         fifo_hdr->isValid = 0;
     }
 
-    posix_memalign(&BandBuffer, 512, sizeof(char) * BNDSZ * 50);
+    posix_memalign((void**) &BandBuffer, 512, sizeof(char) * BNDSZ * 50);
 
     pthread_mutex_init(&simu_smr_fifo_mutex, NULL);
 
@@ -131,41 +131,41 @@ void InitEmulator()
 
     initSSDTable(NBLOCK_SMR_PB + 1);
 
-    log_emu = fopen(log_emu_path, "w+");
-    if(log_emu == NULL)
-        paul_error_exit("cannot open log: log_emu.");
+    Log_emu = fopen(Log_emu_path, "w+");
+    if(Log_emu == NULL)
+        paul_error_exit("cannot open log: Log_emu.");
 }
 
 /** \brief
  *  LEGACY: To monitor the FIFO in SMR, and do cleanning operation when idle status.
  */
-static void*
-smr_fifo_monitor_thread()
-{
-    pthread_t th = pthread_self();
-    pthread_detach(th);
-    int interval = 10;
-    printf("Simulator Auto-clean thread [%lu], clean interval %d seconds.\n",th,interval);
+// static void*
+// smr_fifo_monitor_thread()
+// {
+//     pthread_t th = pthread_self();
+//     pthread_detach(th);
+//     int interval = 10;
+//     printf("Simulator Auto-clean thread [%lu], clean interval %d seconds.\n",th,interval);
 
-    while (1)
-    {
-        pthread_mutex_lock(&simu_smr_fifo_mutex);
-        if (!ACCESS_FLAG)
-        {
-            flushFIFO();
-            pthread_mutex_unlock(&simu_smr_fifo_mutex);
-            if (DEBUG)
-                printf("[INFO] freeStrategySSD():--------after clean\n");
-        }
-        else
-        {
-            ACCESS_FLAG = 0;
-            pthread_mutex_unlock(&simu_smr_fifo_mutex);
-            sleep(interval);
-        }
-    }
-    return NULL;
-}
+//     while (1)
+//     {
+//         pthread_mutex_lock(&simu_smr_fifo_mutex);
+//         if (!ACCESS_FLAG)
+//         {
+//             flushFIFO();
+//             pthread_mutex_unlock(&simu_smr_fifo_mutex);
+//             if (DEBUG)
+//                 printf("[INFO] freeStrategySSD():--------after clean\n");
+//         }
+//         else
+//         {
+//             ACCESS_FLAG = 0;
+//             pthread_mutex_unlock(&simu_smr_fifo_mutex);
+//             sleep(interval);
+//         }
+//     }
+//     return NULL;
+// }
 
 int
 simu_smr_read(char *buffer, size_t size, off_t offset)
@@ -339,7 +339,6 @@ flushFIFO()
     double collect_time;
     _TimerLap(&tv_collect_start);
     /**--------------------------------------------------- **/
-    int aio_read_cnt = 0;
     long curPos = leader->despId;
     while(curPos != global_fifo_ctrl.tail)
     {
@@ -351,6 +350,8 @@ flushFIFO()
         {
             off_t offset_inband = curDesp->tag.offset - thisBandOff;
 #ifdef EMULATION_AIO
+            static int aio_read_cnt = 0;
+
             struct aiocb* aio_n = aiolist + aio_read_cnt;
             aio_n->aio_fildes = fd_fifo_part;
             aio_n->aio_offset = curPos * BLKSZ;
@@ -396,7 +397,7 @@ flushFIFO()
     {
         char log[128];
         sprintf(log,"Flush [%ld] times ERROR: AIO read list from FIFO Failure[%d].\n",simu_flush_bands+1,ret_aio);
-        paul_log(log, log_emu);
+        paul_log(log, Log_emu);
     }
     _TimerLap(&tv_stop);
     simu_time_read_fifo += TimerInterval_SECOND(&tv_start,&tv_stop);
@@ -431,9 +432,9 @@ flushFIFO()
 
     char log[256];
     sprintf(log,"[Emulator]: RMW number:%lu, write amplifcation:%f\n",STT->n_RMW, wtrAmp);
-    paul_log(log, log_emu);
-    sprintf(log,"[Emulator]: dirty blocks in band colect=%d, bandsize=%d\n", dirty_n_inBand,thisBandSize/BLKSZ);
-    paul_log(log, log_emu);
+    paul_log(log, Log_emu);
+    sprintf(log,"[Emulator]: dirty blocks in band colect=%ld, bandsize=%ld\n", dirty_n_inBand, thisBandSize/BLKSZ);
+    paul_log(log, Log_emu);
 }
 
 static unsigned long
@@ -487,5 +488,5 @@ void Emu_ResetStatisic()
 
 void CloseSMREmu()
 {
-    fclose(log_emu);
+    fclose(Log_emu);
 }

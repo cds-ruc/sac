@@ -1,53 +1,50 @@
 #include <stdlib.h>
 #include "most.h"
 #include "../statusDef.h"
-#include "losertree4pore.h"
 #include "../report.h"
-
-static Dscptr*   GlobalDespArray;
-static ZoneCtrl*            ZoneCtrlArray;
-
-static unsigned long*       ZoneSortArray;      /* The zone ID array sorted by weight(calculated customized). it is used to determine the open zones */
-static int                  OpenZoneCnt;        /* It represent the number of open zones and the first number elements in 'ZoneSortArray' is the open zones ID */
-
-extern long                 Cycle_Length;        /* The period lenth which defines the times of eviction triggered */
-static long                 PeriodProgress;     /* Current times of eviction in a period lenth */
-static long                 StampGlobal;      /* Current io sequenced number in a period lenth, used to distinct the degree of heat among zones */
-static int                  IsNewPeriod;
-
-
-static void add2ArrayHead(Dscptr* desp, ZoneCtrl* zoneCtrl);
-static void move2ArrayHead(Dscptr* desp,ZoneCtrl* zoneCtrl);
-static long stamp(Dscptr* desp);
-static void unloadfromZone(Dscptr* desp, ZoneCtrl* zoneCtrl);
-static void clearDesp(Dscptr* desp);
-static void hit(Dscptr* desp, ZoneCtrl* zoneCtrl);
-/** PORE **/
-static int redefineOpenZones();
-static ZoneCtrl* getEvictZone();
-static long stamp(Dscptr* desp);
 typedef struct Dscptr
 {
-    long            serial_id;
-    SSDBufTag       ssd_buf_tag;
-    unsigned 	    flag;
-    long            pre,next;
-    unsigned long   heat;
-    long     	    stamp;
-    unsigned long   zoneId;
-}Dscptr;
+    long serial_id;
+    SSDBufTag ssd_buf_tag;
+    unsigned flag;
+    long pre, next;
+    unsigned long heat;
+    long stamp;
+    unsigned long zoneId;
+} Dscptr;
 
 typedef struct ZoneCtrl
 {
-    unsigned long   zoneId;
-    long            heat;
-    long            pagecnt_dirty;
-    long            pagecnt_clean;
-    long            head,tail;
-    int             activate_after_n_cycles;
+    unsigned long zoneId;
+    long heat;
+    long pagecnt_dirty;
+    long pagecnt_clean;
+    long head, tail;
+    int activate_after_n_cycles;
     unsigned long score;
+} ZoneCtrl;
 
-}ZoneCtrl;
+static Dscptr *GlobalDespArray;
+static ZoneCtrl *ZoneCtrlArray;
+
+static unsigned long *ZoneSortArray; /* The zone ID array sorted by weight(calculated customized). it is used to determine the open zones */
+static int OpenZoneCnt;              /* It represent the number of open zones and the first number elements in 'ZoneSortArray' is the open zones ID */
+
+extern long Cycle_Length;   /* The period lenth which defines the times of eviction triggered */
+static long PeriodProgress; /* Current times of eviction in a period lenth */
+static long StampGlobal;    /* Current io sequenced number in a period lenth, used to distinct the degree of heat among zones */
+static int IsNewPeriod;
+
+static void add2ArrayHead(Dscptr *desp, ZoneCtrl *zoneCtrl);
+static void move2ArrayHead(Dscptr *desp, ZoneCtrl *zoneCtrl);
+static long stamp(Dscptr *desp);
+static void unloadfromZone(Dscptr *desp, ZoneCtrl *zoneCtrl);
+static void clearDesp(Dscptr *desp);
+static void hit(Dscptr *desp, ZoneCtrl *zoneCtrl);
+/** PORE **/
+static int redefineOpenZones();
+static ZoneCtrl *getEvictZone();
+static long stamp(Dscptr *desp);
 
 static volatile unsigned long
 getZoneNum(size_t offset)
@@ -56,21 +53,20 @@ getZoneNum(size_t offset)
 }
 
 /* Process Function */
-int
-Init_most()
+int Init_most()
 {
     Cycle_Length = NBLOCK_SMR_PB;
     StampGlobal = PeriodProgress = 0;
     IsNewPeriod = 0;
-    GlobalDespArray = (Dscptr*)malloc(sizeof(Dscptr) * NBLOCK_SSD_CACHE);
-    ZoneCtrlArray = (ZoneCtrl*)malloc(sizeof(ZoneCtrl) * NZONES);
+    GlobalDespArray = (Dscptr *)malloc(sizeof(Dscptr) * NBLOCK_SSD_CACHE);
+    ZoneCtrlArray = (ZoneCtrl *)malloc(sizeof(ZoneCtrl) * NZONES);
 
-    ZoneSortArray = (unsigned long*)malloc(sizeof(unsigned long) * NZONES);
+    ZoneSortArray = (unsigned long *)malloc(sizeof(unsigned long) * NZONES);
 
     int i = 0;
-    while(i < NBLOCK_SSD_CACHE)
+    while (i < NBLOCK_SSD_CACHE)
     {
-        Dscptr* desp = GlobalDespArray + i;
+        Dscptr *desp = GlobalDespArray + i;
         desp->serial_id = i;
         desp->ssd_buf_tag.offset = -1;
         desp->next = desp->pre = -1;
@@ -80,9 +76,9 @@ Init_most()
         i++;
     }
     i = 0;
-    while(i < NZONES)
+    while (i < NZONES)
     {
-        ZoneCtrl* ctrl = ZoneCtrlArray + i;
+        ZoneCtrl *ctrl = ZoneCtrlArray + i;
         ctrl->zoneId = i;
         ctrl->heat = ctrl->pagecnt_clean = ctrl->pagecnt_dirty = 0;
         ctrl->head = ctrl->tail = -1;
@@ -93,77 +89,76 @@ Init_most()
     return 0;
 }
 
-int
-LogIn_most(long despId, SSDBufTag tag, unsigned flag)
+int LogIn_most(long despId, SSDBufTag tag, unsigned flag)
 {
     /* activate the decriptor */
-    Dscptr* myDesp = GlobalDespArray + despId;
-    ZoneCtrl* myZone = ZoneCtrlArray + getZoneNum(tag.offset);
+    Dscptr *myDesp = GlobalDespArray + despId;
+    ZoneCtrl *myZone = ZoneCtrlArray + getZoneNum(tag.offset);
     myDesp->ssd_buf_tag = tag;
     myDesp->flag |= flag;
 
     /* add into chain */
     add2ArrayHead(myDesp, myZone);
 
-    if((flag & SSD_BUF_DIRTY) != 0)
+    if ((flag & SSD_BUF_DIRTY) != 0)
         myZone->pagecnt_dirty++;
-    else{
+    else
+    {
         myZone->pagecnt_clean++;
     }
     return 1;
 }
 
-int
-LogOut_most(long * out_despid_array, int max_n_batch)
+int LogOut_most(long *out_despid_array, int max_n_batch)
 {
     static int periodCnt = 0;
-    static ZoneCtrl* chosenOpZone;
-    if(PeriodProgress % Cycle_Length == 0 || chosenOpZone->tail < 0)
+    static ZoneCtrl *chosenOpZone;
+    if (PeriodProgress % Cycle_Length == 0 || chosenOpZone->tail < 0)
     {
         redefineOpenZones();
         PeriodProgress = 0;
         periodCnt++;
         chosenOpZone = getEvictZone();
-        printf("Period [%d], OpenZones_cnt=%d\n",periodCnt,OpenZoneCnt);
+        printf("Period [%d], OpenZones_cnt=%d\n", periodCnt, OpenZoneCnt);
     }
 
-    Dscptr*  evitedDesp;
+    Dscptr *evitedDesp;
     int evict_grain = 64;
     int cnt = 0;
-    while(cnt < evict_grain)
+    while (cnt < evict_grain)
     {
-	if(chosenOpZone->tail < 0)
+        if (chosenOpZone->tail < 0)
             break;
         evitedDesp = GlobalDespArray + chosenOpZone->tail;
         out_despid_array[cnt] = evitedDesp->serial_id;
 
-        unloadfromZone(evitedDesp,chosenOpZone);
-        chosenOpZone->heat -= evitedDesp->heat;   /**< Decision indicators */
-        if((evitedDesp->flag & SSD_BUF_DIRTY) != 0)
+        unloadfromZone(evitedDesp, chosenOpZone);
+        chosenOpZone->heat -= evitedDesp->heat; /**< Decision indicators */
+        if ((evitedDesp->flag & SSD_BUF_DIRTY) != 0)
         {
-            chosenOpZone->pagecnt_dirty--;                  /**< Decision indicators */
+            chosenOpZone->pagecnt_dirty--; /**< Decision indicators */
         }
         else
         {
-            chosenOpZone->pagecnt_clean--;                  /**< Decision indicators */
+            chosenOpZone->pagecnt_clean--; /**< Decision indicators */
         }
-	clearDesp(evitedDesp);
-	PeriodProgress++;
-	cnt ++ ;
+        clearDesp(evitedDesp);
+        PeriodProgress++;
+        cnt++;
     }
     return cnt;
 }
 
-int
-Hit_most(long despId, unsigned flag)
+int Hit_most(long despId, unsigned flag)
 {
-    Dscptr* myDesp = GlobalDespArray + despId;
-    ZoneCtrl* myZone = ZoneCtrlArray + getZoneNum(myDesp->ssd_buf_tag.offset);
+    Dscptr *myDesp = GlobalDespArray + despId;
+    ZoneCtrl *myZone = ZoneCtrlArray + getZoneNum(myDesp->ssd_buf_tag.offset);
 
-    move2ArrayHead(myDesp,myZone);
-    hit(myDesp,myZone);
+    move2ArrayHead(myDesp, myZone);
+    hit(myDesp, myZone);
     stamp(myDesp);
-    if((myDesp->flag & SSD_BUF_DIRTY) == 0 && (flag & SSD_BUF_DIRTY) != 0){
+    if ((myDesp->flag & SSD_BUF_DIRTY) == 0 && (flag & SSD_BUF_DIRTY) != 0)
+    {
         myZone->pagecnt_dirty++;
         myZone->pagecnt_clean--;
     }
@@ -177,16 +172,16 @@ Hit_most(long despId, unsigned flag)
 *****************/
 
 static void
-hit(Dscptr* desp, ZoneCtrl* zoneCtrl)
+hit(Dscptr *desp, ZoneCtrl *zoneCtrl)
 {
     desp->heat++;
     zoneCtrl->heat++;
 }
 
 static void
-add2ArrayHead(Dscptr* desp, ZoneCtrl* zoneCtrl)
+add2ArrayHead(Dscptr *desp, ZoneCtrl *zoneCtrl)
 {
-    if(zoneCtrl->head < 0)
+    if (zoneCtrl->head < 0)
     {
         //empty
         zoneCtrl->head = zoneCtrl->tail = desp->serial_id;
@@ -194,7 +189,7 @@ add2ArrayHead(Dscptr* desp, ZoneCtrl* zoneCtrl)
     else
     {
         //unempty
-        Dscptr* headDesp = GlobalDespArray + zoneCtrl->head;
+        Dscptr *headDesp = GlobalDespArray + zoneCtrl->head;
         desp->pre = -1;
         desp->next = zoneCtrl->head;
         headDesp->pre = desp->serial_id;
@@ -203,9 +198,9 @@ add2ArrayHead(Dscptr* desp, ZoneCtrl* zoneCtrl)
 }
 
 static void
-unloadfromZone(Dscptr* desp, ZoneCtrl* zoneCtrl)
+unloadfromZone(Dscptr *desp, ZoneCtrl *zoneCtrl)
 {
-    if(desp->pre < 0)
+    if (desp->pre < 0)
     {
         zoneCtrl->head = desp->next;
     }
@@ -214,7 +209,7 @@ unloadfromZone(Dscptr* desp, ZoneCtrl* zoneCtrl)
         GlobalDespArray[desp->pre].next = desp->next;
     }
 
-    if(desp->next < 0)
+    if (desp->next < 0)
     {
         zoneCtrl->tail = desp->pre;
     }
@@ -226,14 +221,14 @@ unloadfromZone(Dscptr* desp, ZoneCtrl* zoneCtrl)
 }
 
 static void
-move2ArrayHead(Dscptr* desp,ZoneCtrl* zoneCtrl)
+move2ArrayHead(Dscptr *desp, ZoneCtrl *zoneCtrl)
 {
     unloadfromZone(desp, zoneCtrl);
     add2ArrayHead(desp, zoneCtrl);
 }
 
 static void
-clearDesp(Dscptr* desp)
+clearDesp(Dscptr *desp)
 {
     desp->ssd_buf_tag.offset = -1;
     desp->next = desp->pre = -1;
@@ -252,21 +247,21 @@ clearDesp(Dscptr* desp)
 static void
 qsort_zone(long start, long end)
 {
-    long		i = start;
-    long		j = end;
+    long i = start;
+    long j = end;
 
     long S = ZoneSortArray[start];
-    ZoneCtrl* curCtrl = ZoneCtrlArray + S;
+    ZoneCtrl *curCtrl = ZoneCtrlArray + S;
     long sWeight = curCtrl->score;
     while (i < j)
     {
-        while (!(ZoneCtrlArray[ZoneSortArray[j]].score > sWeight) && i<j)
+        while (!(ZoneCtrlArray[ZoneSortArray[j]].score > sWeight) && i < j)
         {
             j--;
         }
         ZoneSortArray[i] = ZoneSortArray[j];
 
-        while (!(ZoneCtrlArray[ZoneSortArray[i]].score < sWeight) && i<j)
+        while (!(ZoneCtrlArray[ZoneSortArray[i]].score < sWeight) && i < j)
         {
             i++;
         }
@@ -284,10 +279,10 @@ static long
 extractNonEmptyZoneId()
 {
     int zoneId = 0, cnt = 0;
-    while(zoneId < NZONES)
+    while (zoneId < NZONES)
     {
-        ZoneCtrl* zone = ZoneCtrlArray + zoneId;
-        if(zone->pagecnt_dirty+zone->pagecnt_clean > 0)
+        ZoneCtrl *zone = ZoneCtrlArray + zoneId;
+        if (zone->pagecnt_dirty + zone->pagecnt_clean > 0)
         {
             ZoneSortArray[cnt] = zoneId;
             cnt++;
@@ -301,50 +296,48 @@ static volatile void
 pause_and_caculate_weight_sizedivhot()
 {
     int n = 0;
-    while( n < NZONES )
+    while (n < NZONES)
     {
-        ZoneCtrl* ctrl = ZoneCtrlArray + n;
+        ZoneCtrl *ctrl = ZoneCtrlArray + n;
         ctrl->score = ctrl->pagecnt_dirty + ctrl->pagecnt_clean;
         n++;
     }
 }
-
 
 static int
 redefineOpenZones()
 {
     pause_and_caculate_weight_sizedivhot(); /**< Method 1 */
     long nonEmptyZoneCnt = extractNonEmptyZoneId();
-    qsort_zone(0,nonEmptyZoneCnt-1);
+    qsort_zone(0, nonEmptyZoneCnt - 1);
 
     /** lookup sort result **/
-//    int i;
-//    for(i = 0; i<100; i++)
-//    {
-//        printf("%d: weight=%ld\t\theat=%ld\t\tndirty=%ld\t\tnclean=%ld\n",
-//               i,
-//               ZoneCtrlArray[ZoneSortArray[i]].weight,
-//               ZoneCtrlArray[ZoneSortArray[i]].heat,
-//               ZoneCtrlArray[ZoneSortArray[i]].pagecnt_dirty,
-//               ZoneCtrlArray[ZoneSortArray[i]].pagecnt_clean);
-//    }
+    //    int i;
+    //    for(i = 0; i<100; i++)
+    //    {
+    //        printf("%d: weight=%ld\t\theat=%ld\t\tndirty=%ld\t\tnclean=%ld\n",
+    //               i,
+    //               ZoneCtrlArray[ZoneSortArray[i]].weight,
+    //               ZoneCtrlArray[ZoneSortArray[i]].heat,
+    //               ZoneCtrlArray[ZoneSortArray[i]].pagecnt_dirty,
+    //               ZoneCtrlArray[ZoneSortArray[i]].pagecnt_clean);
+    //    }
 
     OpenZoneCnt = 1;
     IsNewPeriod = 1;
-    printf("NonEmptyZoneCnt = %ld.\n",nonEmptyZoneCnt);
+    printf("NonEmptyZoneCnt = %ld.\n", nonEmptyZoneCnt);
     return 0;
 }
 
-static ZoneCtrl*
+static ZoneCtrl *
 getEvictZone()
 {
-    return  ZoneCtrlArray + ZoneSortArray[0];
+    return ZoneCtrlArray + ZoneSortArray[0];
 }
 
 static long
-stamp(Dscptr* desp)
+stamp(Dscptr *desp)
 {
     desp->stamp = ++StampGlobal;
     return StampGlobal;
 }
-

@@ -80,7 +80,7 @@ hitInBuffer_LRU_private(long serial_id)
 int
 insertBuffer_LRU_private(long serial_id)
 {
-    strategy_desp[serial_id].user_id = UserId;
+//    strategy_desp[serial_id].user_id = UserId;
     addToLRUHead(&strategy_desp[serial_id]);
 
     return 0;

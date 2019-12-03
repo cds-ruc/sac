@@ -16,11 +16,10 @@
 #include "smr-emulator/emulator_v2.h"
 
 //#include "/home/fei/git/Func-Utils/pipelib.h"
-#include "hrc.h"
+// #include "hrc.h"
 extern struct RuntimeSTAT *STT;
 #define REPORT_INTERVAL 250000 // 1GB for blksize=4KB
 
-static void do_HRC();
 static void reportCurInfo();
 static void report_ontime();
 static void resetStatics();
@@ -29,8 +28,13 @@ static timeval tv_trace_start, tv_trace_end;
 static double time_trace;
 
 /** single request statistic information **/
+#ifdef LOG_SINGLE_REQ
 static timeval tv_req_start, tv_req_stop;
+double io_latency; // latency of each IO
+static char log[256];
 static microsecond_t msec_req;
+#endif //LOG_SINGLE_REQ
+
 extern microsecond_t msec_r_hdd, msec_w_hdd, msec_r_ssd, msec_w_ssd;
 extern int IsHit;
 char logbuf[512];
@@ -53,15 +57,14 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
     int isFullSSDcache = 0;
     char pipebuf[128];
     static struct timeval tv_start_io, tv_stop_io;
-    static char log[256];
-    double io_latency; // latency of each IO
 
-#ifdef CG_THROTTLE
-    static char *cgbuf;
-    int returncode = posix_memalign(&cgbuf, 512, 4096);
-#endif // CG_THROTTLE
 
-    returnCode = posix_memalign(&ssd_buffer, 1024, 16 * sizeof(char) * BLKSZ);
+// #ifdef CG_THROTTLE
+//     static char *cgbuf;
+//     int returncode = posix_memalign(&cgbuf, 512, 4096);
+// #endif // CG_THROTTLE
+
+    returnCode = posix_memalign((void**)&ssd_buffer, 1024, 16 * sizeof(char) * BLKSZ);
     if (returnCode < 0)
     {
         paul_warning("posix memalign error\n");
@@ -75,7 +78,6 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
     }
 
     _TimerLap(&tv_trace_start);
-    static int req_cnt = 0;
 
     blkcnt_t total_n_req = REPORT_INTERVAL * 500 * 3; //isWriteOnly ? (blkcnt_t)REPORT_INTERVAL*500*3 : REPORT_INTERVAL*500*3;
     blkcnt_t skiprows = 0;                            //isWriteOnly ?  50000000 : 100000000;
@@ -113,12 +115,12 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
             write_block(offset, ssd_buffer);
 
             _TimerLap(&tv_stop_io);
-            io_latency = TimerInterval_SECOND(&tv_start_io, &tv_stop_io);
 
             STT->reqcnt_w++;
             STT->reqcnt_s++;
 
 #ifdef LOG_IO_LAT
+            io_latency = TimerInterval_SECOND(&tv_start_io, &tv_stop_io);
             sprintf(log, "%f,%c\n", io_latency, action);
             paul_log(log, log_lat);
 #endif // LOG_IO_LAT
@@ -128,12 +130,12 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
             read_block(offset, ssd_buffer);
 
             _TimerLap(&tv_stop_io);
-            io_latency = TimerInterval_SECOND(&tv_start_io, &tv_stop_io);
 
             STT->reqcnt_r++;
             STT->reqcnt_s++;
 
 #ifdef LOG_IO_LAT
+            io_latency = TimerInterval_SECOND(&tv_start_io, &tv_stop_io);
             sprintf(log, "%f,%c\n", io_latency, action);
             paul_log(log, log_lat);
 #endif //LOG_IO_LAT
@@ -152,7 +154,6 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
             <req_id, r/w, ishit, time cost for: one request, read_ssd, write_ssd, read_smr, write_smr>
         */
         // sprintf(logbuf,"%lu,%c,%d,%ld,%ld,%ld,%ld,%ld\n",STT->reqcnt_s,action,IsHit,msec_req,msec_r_ssd,msec_w_ssd,msec_r_hdd,msec_w_hdd);
-        //paul_log(logbuf, log_emu);
         msec_r_ssd = msec_w_ssd = msec_r_hdd = msec_w_hdd = 0;
 #endif // TIMER_SINGLE_REQ
 
@@ -189,46 +190,6 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
     fclose(log_lat_pb);
 }
 
-static void
-do_HRC()
-{
-#ifdef HRC_PROCS_N
-    char action;
-    off_t offset;
-    int i;
-    int strlen = 64;
-    char buf[128];
-    int ret;
-    while ((ret = read(PipeEnd_of_HRC, buf, strlen)) == strlen)
-    {
-        if (sscanf(buf, "%c,%lu\n", &action, &offset) < 0)
-        {
-            perror("HRC: sscanf string");
-            exit(EXIT_FAILURE);
-        }
-
-        if (action == ACT_WRITE) // Write = 1
-        {
-            STT->reqcnt_w++;
-            STT->reqcnt_s++;
-            write_block(offset, NULL);
-        }
-        else if (action == ACT_READ) // read = 9
-        {
-            STT->reqcnt_r++;
-            STT->reqcnt_s++;
-            read_block(offset, NULL);
-        }
-
-        if (STT->reqcnt_s % 10000 == 0)
-        {
-            hrc_report();
-        }
-    }
-
-    exit(EXIT_SUCCESS);
-#endif
-}
 
 static void reportCurInfo()
 {
@@ -246,7 +207,7 @@ static void reportCurInfo()
 
     printf(" total run time (s): %lf\n time_read_ssd : %lf\n time_write_ssd : %lf\n time_read_smr : %lf\n time_write_smr : %lf\n",
            time_trace, STT->time_read_ssd, STT->time_write_ssd, STT->time_read_hdd, STT->time_write_hdd);
-    printf(" Batch flush HDD time:%lu\n", msec_bw_hdd);
+    printf(" Batch flush HDD time:%u\n", msec_bw_hdd);
 
     printf(" Cache Proportion(R/W): [%ld/%ld]\n", STT->incache_n_clean, STT->incache_n_dirty);
     printf(" wt_hit_rd: %lu\n rd_hit_wt: %lu\n", STT->wt_hit_rd, STT->rd_hit_wt);
@@ -279,7 +240,7 @@ static void resetStatics()
     STT->load_hdd_blocks = 0;
 
     STT->reqcnt_r = STT->reqcnt_w = 0;
-    STT->hitnum_s, STT->hitnum_r, STT->hitnum_w = 0;
+    STT->hitnum_s = STT->hitnum_r = STT->hitnum_w = 0;
 
     STT->time_read_hdd = 0.0;
     STT->time_write_hdd = 0.0;

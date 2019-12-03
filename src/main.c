@@ -25,86 +25,21 @@ int analyze_opts(int argc, char **argv);
 
 unsigned int INIT_PROCESS = 0;
 
-char *tracefile[] = {
-    "../traces/src1_2.csv.req",
-    "../traces/wdev_0.csv.req",
-    "../traces/hm_0.csv.req",
-    "../traces/mds_0.csv.req",
-    "../traces/prn_0.csv.req",
-    "../traces/rsrch_0.csv.req",
-    "../traces/stg_0.csv.req",
-    "../traces/ts_0.csv.req",
-    "../traces/usr_0.csv.req",
-    "../traces/web_0.csv.req",
-    "../traces/production-LiveMap-Backend-4K.req", // --> not in used.
-    "../traces/long.req"                           // default set: cache size = 8M*blksize; persistent buffer size = 1.6M*blksize.
+const char *tracefile[] = {
+    "./traces/src1_2.csv.req",
+    "./traces/wdev_0.csv.req",
+    "./traces/hm_0.csv.req",
+    "./traces/mds_0.csv.req",
+    "./traces/prn_0.csv.req",
+    "./traces/rsrch_0.csv.req",
+    "./traces/stg_0.csv.req",
+    "./traces/ts_0.csv.req",
+    "./traces/usr_0.csv.req",
+    "./traces/web_0.csv.req",
+    "./traces/production-LiveMap-Backend-4K.req", // --> not in used.
+    "./traces/long.req"                           // default set: cache size = 8M*blksize; persistent buffer size = 1.6M*blksize.
 };
 
-int main(int argc, char **argv)
-{
-    // 1 1 1 0 0 100000 100000
-    // 1 1 0 0 0 100000 100000
-    //0 11 1 0 8000000 8000000 30 PAUL -1
-
-    analyze_opts(argc, argv);
-
-    /* Open Device */
-    initRuntimeInfo();
-    CacheLayer_Init();
-
-    if (EMULATION)
-    {
-        /* Emulator */
-        fd_fifo_part = open(simu_smr_fifo_device, O_RDWR | O_DIRECT);
-        fd_smr_part = open(simu_smr_smr_dev_path, O_RDWR | O_DIRECT | O_FSYNC);
-        //printf("Simulator Device: fifo part=%d, smr part=%d\n", fd_fifo_part, fd_smr_part);
-        if (fd_fifo_part < 0 || fd_smr_part < 0)
-        {
-            #ifndef EMU_NO_DISK_IO
-            paul_error_exit("No emulator smr devices.");
-            #endif
-        }
-        InitEmulator();
-    }
-
-    trace_to_iocall(TraceFile, StartLBA);
-
-    // Finish Job. Exit Safely.
-    if (EMULATION)
-    {
-        Emu_PrintStatistic();
-        CloseSMREmu();
-    }
-
-    close(smr_fd);
-    close(cache_fd);
-    ReportCM();
-    wait(NULL);
-    exit(EXIT_SUCCESS);
-}
-
-int initRuntimeInfo()
-{
-    STT = (struct RuntimeSTAT *)multi_SHM_alloc(str_STT, sizeof(struct RuntimeSTAT));
-    if (STT == NULL)
-        return errno;
-
-    STT->traceId = TraceId;
-    STT->startLBA = StartLBA;
-    STT->workload_mode = Workload_Mode;
-    STT->cacheUsage = 0;
-    STT->cacheLimit = NBLOCK_SSD_CACHE;
-
-    STT->wtrAmp_cur = 0;
-    STT->WA_sum = 0;
-    STT->n_RMW = 0;
-    return 0;
-}
-
-int proc_paul_exit(int flag)
-{
-    exit(flag);
-}
 
 int analyze_opts(int argc, char **argv)
 {
@@ -154,8 +89,6 @@ int analyze_opts(int argc, char **argv)
                 EvictStrategy = LRU_CDC;
             else if (strcmp(optarg, "PAUL") == 0)
                 EvictStrategy = PAUL;
-            else if (strcmp(optarg, "PORE") == 0)
-                EvictStrategy = PORE;
             else if (strcmp(optarg, "MOST") == 0)
                 EvictStrategy = MOST;
             else if (strcmp(optarg, "MOST_CDC") == 0)
@@ -166,7 +99,7 @@ int analyze_opts(int argc, char **argv)
             break;
 
         case 'W': // workload
-            TraceID = atoi(aptarg);
+            TraceID = atoi(optarg);
             if (TraceID > 10 || TraceID <= 0)
             {
                 printf("ERROR: Workload number is illegal, please tpye with 1~10: \n.");
@@ -183,10 +116,10 @@ int analyze_opts(int argc, char **argv)
                 paul_exit(EXIT_FAILURE);
             }
 
-            if ((TraceFile = fopen(tracefilep[TraceID - 1], "rt")) == NULL)
+            if ((TraceFile = fopen(tracefile[TraceID - 1], "rt")) == NULL)
             {
 
-                printf("ERROR: Failed to open the trace file: %s\n", tracefilep[TraceID - 1]);
+                printf("ERROR: Failed to open the trace file: %s\n", tracefile[TraceID - 1]);
                 paul_exit(EXIT_FAILURE);
             }
 
@@ -194,10 +127,9 @@ int analyze_opts(int argc, char **argv)
 
         case 'T': // workload file
             printf("[User Setting] Workload file path: %s\n", optarg);
-            if ((TraceFile = fopen(tracefilep[TraceID - 1], "rt")) == NULL)
+            if ((TraceFile = fopen(optarg, "rt")) == NULL)
             {
-                printf("ERROR: Failed to open the trace file: %s\n", tracefilep[TraceID - 1]);
-                paul_exit(EXIT_FAILURE);
+                paul_error_exit("ERROR: Failed to open the trace file: %s\n", optarg);
             }
             break;
 
@@ -246,17 +178,17 @@ int analyze_opts(int argc, char **argv)
             break;
         case 'c': // blkcnt of cache
             NBLOCK_SSD_CACHE = NTABLE_SSD_CACHE = atol(optarg);
-            printf("[User Setting] NBLOCK_SSD_CACHE = %l.\n", NBLOCK_SSD_CACHE);
+            printf("[User Setting] NBLOCK_SSD_CACHE = %ld.\n", NBLOCK_SSD_CACHE);
             break;
 
         case 'p': // blkcnt of smr's pb
             NBLOCK_SMR_PB = atol(optarg) * (ZONESZ / BLKSZ);
-            printf("[User Setting] NBLOCK_SMR_PB = %l.\n", NBLOCK_SMR_PB);
+            printf("[User Setting] NBLOCK_SMR_PB = %ld.\n", NBLOCK_SMR_PB);
             break;
 
         case 'O': // offset, the started LBA of the workload.
             StartLBA = atol(optarg);
-            printf("[User Setting] offset (the started LBA of the workload) is = %l.\n", StartLBA);
+            printf("[User Setting] offset (the started LBA of the workload) is = %ld.\n", StartLBA);
             break;
 
         case '?':
@@ -294,4 +226,71 @@ int analyze_opts(int argc, char **argv)
     /* checking user option. */
 
     return 0;
+}
+
+
+int initRuntimeInfo()
+{
+    STT = (struct RuntimeSTAT *)multi_SHM_alloc(str_STT, sizeof(struct RuntimeSTAT));
+    if (STT == NULL)
+        return errno;
+
+    STT->traceId = TraceID;
+    STT->startLBA = StartLBA;
+    STT->workload_mode = Workload_Mode;
+    STT->cacheUsage = 0;
+    STT->cacheLimit = NBLOCK_SSD_CACHE;
+
+    STT->wtrAmp_cur = 0;
+    STT->WA_sum = 0;
+    STT->n_RMW = 0;
+    return 0;
+}
+
+
+int main(int argc, char **argv)
+{
+    // 1 1 1 0 0 100000 100000
+    // 1 1 0 0 0 100000 100000
+    //0 11 1 0 8000000 8000000 30 PAUL -1
+
+    FILE* fd1 = fopen("./logs/test.log", "w+");
+    if(fd1 == NULL)
+        paul_error_exit("cannot open log: Log_emu.");
+
+    return 0;
+    
+    analyze_opts(argc, argv);
+
+    /* Open Device */
+    initRuntimeInfo();
+    CacheLayer_Init();
+
+    if (EMULATION)
+    {
+        /* Emulator */
+        fd_fifo_part = open(simu_smr_fifo_device, O_RDWR | O_DIRECT);
+        fd_smr_part = open(simu_smr_smr_dev_path, O_RDWR | O_DIRECT | O_FSYNC);
+        //printf("Simulator Device: fifo part=%d, smr part=%d\n", fd_fifo_part, fd_smr_part);
+        if (fd_fifo_part < 0 || fd_smr_part < 0)
+        {
+            #ifndef EMU_NO_DISK_IO
+            paul_error_exit("No emulator smr devices.");
+            #endif
+        }
+        InitEmulator();
+    }
+
+    trace_to_iocall(TraceFile, StartLBA);
+
+    // Finish Job. Exit Safely.
+    if (EMULATION)
+    {
+        Emu_PrintStatistic();
+        CloseSMREmu();
+    }
+
+    close(smr_fd);
+    close(cache_fd);
+    exit(EXIT_SUCCESS);
 }
