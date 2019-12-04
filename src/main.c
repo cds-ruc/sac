@@ -67,8 +67,8 @@ int analyze_opts(int argc, char **argv)
         int opt = getopt_long(argc, argv, optstr, long_options, &longIndex);
         if (opt == -1)
             break;
-        //printf("opt=%c,\nlongindex=%d,\nnext arg index: optind=%d,\noptarg=%s,\nopterr=%d,\noptopt=%c\n",
-        //opt, longIndex, optind, optarg, opterr, optopt);
+       // printf("opt=%c,\nlongindex=%d,\nnext arg index: optind=%d,\noptarg=%s,\nopterr=%d,\noptopt=%c\n",
+       // opt, longIndex, optind, optarg, opterr, optopt);
 
         switch (opt)
         {
@@ -122,7 +122,7 @@ int analyze_opts(int argc, char **argv)
                 printf("ERROR: Failed to open the trace file: %s\n", tracefile[TraceID - 1]);
                 paul_exit(EXIT_FAILURE);
             }
-
+	    printf("[User Setting] Workload file path: %s\n", tracefile[TraceID - 1]);
             break;
 
         case 'T': // workload file
@@ -158,13 +158,14 @@ int analyze_opts(int argc, char **argv)
 
         case 'D': // no-real-io
             NO_REAL_DISK_IO = 1;
-            printf("[User Setting] No real disk IO. This option discards the request before it is sent to the device, so no real IO will be generated, \n\tbut the data structure including the cache algorithm and simulator statistics still works.\n");
+            printf("[User Setting] No real disk IO. This option discards the request before it is sent to the device, so no real IO will be generated, \n\tbut the data structure including the cache algorithm and SMR Emulator statistics still works.\n");
             break;
 
         case 'C': // cache-dev
+	    printf("optarg 1 = %s\n",optarg);
             cache_dev_path = optarg;
             if((cache_fd = open(cache_dev_path, O_RDWR | O_DIRECT)) < 0){
-                paul_error_exit("Unable to open CACHE device file: %s", cache_dev_path);
+                paul_error_exit("Unable to open CACHE device file: %s", optarg);
             }
             printf("[User Setting] Cache device file: %s\n\t(You can still use ramdisk or memory fs for testing.)\n", cache_dev_path);
             break;
