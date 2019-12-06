@@ -26,9 +26,9 @@ int analyze_opts(int argc, char **argv);
 unsigned int INIT_PROCESS = 0;
 
 const char *tracefile[] = {
-    "./traces/src1_2.csv.req",
-    "./traces/wdev_0.csv.req",
-    "./traces/hm_0.csv.req",
+    "/home/fei/devel/git/sac/traces/src1_2.csv.req",
+    "/home/fei/devel/git/sac/traces/wdev_0.csv.req",
+    "/home/fei/devel/git/sac/traces/hm_0.csv.req",
     "./traces/mds_0.csv.req",
     "./traces/prn_0.csv.req",
     "./traces/rsrch_0.csv.req",
@@ -46,7 +46,7 @@ int analyze_opts(int argc, char **argv)
     static struct option long_options[] = {
         {"cache-dev", required_argument, NULL, 'C'},  // FORCE
         {"smr-dev", required_argument, NULL, 'S'},    // FORCE
-        {"no-cache", no_argument, NULL, 'N'},         
+        {"no-cache", no_argument, NULL, 'N'},
         {"use-emulator", required_argument, NULL, 'E'},
         {"workload", required_argument, NULL, 'W'},   // FORCE
         {"workload-file", required_argument, NULL, 'T'},  // FORCE
@@ -56,10 +56,11 @@ int analyze_opts(int argc, char **argv)
         {"blkcnt-pb", required_argument, NULL, 'p'},
         {"algorithm", required_argument, NULL, 'A'},
         {"offset", required_argument, NULL, 'O'},
+        {"requests", required_argument, NULL, 'R'},
         {0, 0, 0, 0}
     };
 
-    const char *optstr = "NE:W:M:F:DC:S:T:c:p:A:O:";
+    const char *optstr = "NE:W:M:F:DC:S:T:c:p:A:O:R:";
     int longIndex;
 
     while (1)
@@ -192,10 +193,15 @@ int analyze_opts(int argc, char **argv)
             printf("[User Setting] offset (the started LBA of the workload) is = %ld.\n", StartLBA);
             break;
 
+        case 'R': // request number
+            Request_limit = atol(optarg);
+            printf("[User Setting] request number = %ld.\n", Request_limit);
+            break;
+
         case '?':
             printf("There is an unrecognized option or option without argument: %s\n", argv[optind - 1]);
             paul_exit(EXIT_FAILURE);
-            break; 
+            break;
 
         default:
             printf("There is an unrecognized option: %c\n", opt);

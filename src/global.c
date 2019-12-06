@@ -13,8 +13,9 @@
 /** This user basic info */
 int TraceID = -1;
 FILE* TraceFile = NULL;
+long int Request_limit = -1;
 off_t StartLBA = 0;
-enum_workload_mode Workload_Mode = IOMODE_RW; // *Default
+int Workload_Mode = IOMODE_RW; // *Default
 SSDEvictionStrategy EvictStrategy = PAUL; // *Default
 long Cycle_Length;
 
@@ -28,7 +29,7 @@ blksize_t BLKSZ = 4096;
 
 // Cache Layer
 blksize_t NBLOCK_SSD_CACHE = 8000000; // 32GB
-blksize_t NTABLE_SSD_CACHE; // equal with NBLOCK_SSD_CACHE
+blksize_t NTABLE_SSD_CACHE = 8000000; // equal with NBLOCK_SSD_CACHE
 
 // SMR layer
 blksize_t NBLOCK_SMR_PB = 30 * 5000;
@@ -49,7 +50,7 @@ char Log_emu_path[] = "./logs/emulator.log";
 FILE* Log_emu = NULL;
 
 /** Shared memory variable names **/
-// Note: They are legacy from multi-user version, and are not used in this code. 
+// Note: They are legacy from multi-user version, and are not used in this code.
 char* SHM_SSDBUF_STRATEGY_CTRL = "SHM_SSDBUF_STRATEGY_CTRL";
 char* SHM_SSDBUF_STRATEGY_DESP = "SHM_SSDBUF_STRATEGY_DESP";
 

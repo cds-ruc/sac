@@ -39,8 +39,8 @@ extern microsecond_t msec_r_hdd, msec_w_hdd, msec_r_ssd, msec_w_ssd;
 extern int IsHit;
 char logbuf[512];
 FILE *log_lat, *log_lat_pb;
-char log_lat_path[] = "/home/fei/devel/logs/iolat.log";
-char log_lat_pb_path[] = "/home/fei/devel/logs/lat_flushsmr.log";
+char log_lat_path[] = "/home/fei/devel/git/sac/logs/iolat.log";
+char log_lat_pb_path[] = "/home/fei/devel/git/sac/logs/lat_flushsmr.log";
 
 void trace_to_iocall(FILE *trace, off_t startLBA)
 {
@@ -79,7 +79,12 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
 
     _TimerLap(&tv_trace_start);
 
-    blkcnt_t total_n_req = REPORT_INTERVAL * 500 * 3; //isWriteOnly ? (blkcnt_t)REPORT_INTERVAL*500*3 : REPORT_INTERVAL*500*3;
+    blkcnt_t total_n_req;
+    if(Request_limit > 0)
+        total_n_req = Request_limit;
+    else
+        total_n_req = REPORT_INTERVAL * 500 * 3; //isWriteOnly ? (blkcnt_t)REPORT_INTERVAL*500*3 : REPORT_INTERVAL*500*3;
+
     blkcnt_t skiprows = 0;                            //isWriteOnly ?  50000000 : 100000000;
 
     while (!feof(trace) && STT->reqcnt_s < total_n_req)

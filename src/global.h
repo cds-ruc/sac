@@ -11,7 +11,7 @@
 
 /* ENV */
 
-//extern char* PROJ_ROOT;  
+//extern char* PROJ_ROOT;
 
 
 struct RuntimeSTAT
@@ -20,7 +20,7 @@ struct RuntimeSTAT
     unsigned int batchId;
     unsigned int userId;
     unsigned int traceId;
-    int workload_mode; 
+    int workload_mode;
     unsigned long startLBA;
     unsigned long trace_req_amount;
     /** Runtime strategy refered parameter **/
@@ -62,12 +62,9 @@ struct RuntimeSTAT
     unsigned long n_RMW;
 };
 
-typedef enum enum_workload_mode
-{
-    IOMODE_R, // 0
-    IOMODE_W, // 1
-    IOMODE_RW // 2 *default
-}enum_workload_mode;
+#define IOMODE_R 0x01
+#define IOMODE_W 0x10
+#define IOMODE_RW 0x11
 
 typedef enum
 {
@@ -83,8 +80,9 @@ typedef enum
 /** This user basic info */
 extern int TraceID;
 extern FILE* TraceFile;
+extern long int Request_limit;
 extern off_t StartLBA;
-extern enum_workload_mode Workload_Mode;
+extern int Workload_Mode;
 extern SSDEvictionStrategy EvictStrategy;
 extern long Cycle_Length;
 
@@ -119,7 +117,7 @@ extern char Log_emu_path[];
 extern FILE* Log_emu;
 
 /** Shared memory variable names **/
-// Note: They are legacy from multi-user version, and are not used in this code. 
+// Note: They are legacy from multi-user version, and are not used in this code.
 extern char* SHM_SSDBUF_STRATEGY_CTRL;
 extern char* SHM_SSDBUF_STRATEGY_DESP;
 
