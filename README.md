@@ -71,7 +71,7 @@ Before the test, you need to ensure that the SSD and SMR device files are presen
 #### Example 1: Quick Run!
 
 ```shell
-./sac ---algorithm SAC ---workload 5 --use-emulator --no-real-io
+./sac --algorithm SAC ---workload 5 --use-emulator --no-real-io
 ./sac ---algorithm LRU ---workload 5 --use-emulator --no-real-io
 ./sac ---algorithm MOST ---workload 5 --use-emulator --no-real-io
 ```
