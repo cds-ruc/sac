@@ -71,9 +71,9 @@ Before the test, you need to ensure that the SSD and SMR device files are presen
 #### Example 1: Quick Run!
 
 ```shell
-./sac --algorithm SAC ---workload 5 --use-emulator --no-real-io
-./sac ---algorithm LRU ---workload 5 --use-emulator --no-real-io
-./sac ---algorithm MOST ---workload 5 --use-emulator --no-real-io
+./sac --algorithm SAC --workload 5 --use-emulator --no-real-io
+./sac --algorithm LRU --workload 5 --use-emulator --no-real-io
+./sac --algorithm MOST --workload 5 --use-emulator --no-real-io
 ```
 
 This command let you quickly verify and compare the effectiveness of a cache algorithm, and its performance will be reflected from the results of the SMR emulator where the most critical indicator is RMW trigger count. Note that, this command will not generate the real disk I/O due to the option `--no-real-io` which discards the request before it is sent to the device, while the metadata structure of the cache algorithm and emulator still running in memory. 
@@ -84,7 +84,7 @@ Also, we provide other comparison cache algorithms including LRU, MOST, and MOST
 #### Example 2: Big dataset and real disk I/O
 
 ```shell
-./sac ---cache-dev \emph{FILE} ---smr-dev \emph{FILE} ---workload 11 ---algorithm SAC --requests 100000000
+./sac --cache-dev [FILE] --smr-dev [FILE] --workload 11 --algorithm SAC --requests 100000000
 ```
 
 For the typical test on SSD-SMR hybrid storage, run the this command which will run the workload number 11 (which is a big dataset) for 100 million requests in read and write mix mode (default), and using the SAC cache algorithm (default). Note that, the real disk I/O will cost a long time, approximately 10+ hours for SAC algorithm, and much more for other algorithms. 
@@ -92,7 +92,7 @@ For the typical test on SSD-SMR hybrid storage, run the this command which will 
 #### Example 3: Small dataset and write-only mode
 
 ```shell
-./sac ---cache-dev \emph{FILE} ---smr-dev \emph{FILE} ---algorithm SAC ---workload 5 ---workload-mode W
+./sac --cache-dev [FILE] --smr-dev [FILE] --algorithm SAC --workload 5 --workload-mode W
 ```
 
 If you need the workload running in write-only mode, you should add the option \code{--workload-mode W} which will only execute write requests in the trace file. 
@@ -102,7 +102,7 @@ There are three optional value of \code{'--workload-mode}, they are \code{W} for
 #### Example 4: Use emulator instead of SMR drive
 
 ```shell
-./sac ---cache-dev \emph{FILE} ---smr-dev \emph{FILE} ---workload 5 ---workload-mode W --use-emulator
+./sac --cache-dev [FILE] --smr-dev [FILE] --workload 5 --workload-mode W --use-emulator
 ```
 
 We enable you to verify the SAC and other cache algorithms without a SMR drive. With the option `--use-emulator`, the program will emulate the behavior of the STL (Shingle Translation Layer) on the regular HDD you specify. The SMR emulator module will then output the information about the I/O time, write amplification, RMW counts, etc. 
