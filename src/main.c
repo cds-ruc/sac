@@ -37,7 +37,7 @@ const char *tracefile[] = {
     "./traces/usr_0.csv.req",
     "./traces/web_0.csv.req",
    // "./traces/production-LiveMap-Backend-4K.req", // --> not in used.
-    "./traces/long.req"                           // default set: cache size = 8M*blksize; persistent buffer size = 1.6M*blksize.
+    "./traces/long.csv.req"                           // default set: cache size = 8M*blksize; persistent buffer size = 1.6M*blksize.
 };
 
 
@@ -68,8 +68,8 @@ int analyze_opts(int argc, char **argv)
         int opt = getopt_long(argc, argv, optstr, long_options, &longIndex);
         if (opt == -1)
             break;
-        printf("opt=%c,\nlongindex=%d,\nnext arg index: optind=%d,\noptarg=%s,\nopterr=%d,\noptopt=%c\n",
-        opt, longIndex, optind, optarg, opterr, optopt);
+        //printf("opt=%c,\nlongindex=%d,\nnext arg index: optind=%d,\noptarg=%s,\nopterr=%d,\noptopt=%c\n",
+        //opt, longIndex, optind, optarg, opterr, optopt);
 
         switch (opt)
         {
