@@ -38,16 +38,15 @@ static microsecond_t msec_req;
 extern microsecond_t msec_r_hdd, msec_w_hdd, msec_r_ssd, msec_w_ssd;
 extern int IsHit;
 char logbuf[512];
-FILE *log_lat, *log_lat_pb;
-char log_lat_path[] = "/home/fei/devel/git/sac/logs/iolat.log";
-char log_lat_pb_path[] = "/home/fei/devel/git/sac/logs/lat_flushsmr.log";
+FILE *log_lat;
+char log_lat_path[] = "./logs/iolat.log";
 
 void trace_to_iocall(FILE *trace, off_t startLBA)
 {
     log_lat = fopen(log_lat_path, "w+");
-    log_lat_pb = fopen(log_lat_pb_path, "w+");
 
-    if (log_lat == NULL || log_lat_pb == NULL)
+
+    if (log_lat == NULL)
         paul_error_exit("log file open failure.");
 
     char action;
@@ -192,7 +191,6 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
     free(ssd_buffer);
     fclose(trace);
     fclose(log_lat);
-    fclose(log_lat_pb);
 }
 
 

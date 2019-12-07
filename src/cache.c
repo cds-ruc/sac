@@ -165,12 +165,12 @@ flushSSDBuffer(SSDBufDesp *ssd_buf_hdr)
     STT->flush_hdd_blocks++;
 
     //CM_Reg_EvictBlk(ssd_buf_hdr->ssd_buf_tag, ssd_buf_hdr->ssd_buf_flag, msec_w_hdd + msec_r_ssd);
-
-    static char log[256];
-    static unsigned long cnt = 0;
-    cnt++;
-    sprintf(log, "%ld, %d\n", cnt, msec_w_hdd);
-    paul_log(log, log_lat_pb);
+//
+//    static char log[256];
+//    static unsigned long cnt = 0;
+//    cnt++;
+//    sprintf(log, "%ld, %d\n", cnt, msec_w_hdd);
+//    paul_log(log, log_lat_pb);
 }
 
 static void flagOp(SSDBufDesp *ssd_buf_hdr, int opType)
@@ -222,7 +222,7 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, int *found, int alloc4What)
     //*isCallBack = CM_TryCallBack(ssd_buf_tag);
     enum_t_vict suggest_type = ENUM_B_Any;
 
-    /* When there is NO free SSD space for cache, 
+    /* When there is NO free SSD space for cache,
      * pick serveral in-used cache block to evict according to strategy */
     if ((ssd_buf_hdr = pop_freebuf()) == NULL)
     {

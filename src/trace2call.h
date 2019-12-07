@@ -9,7 +9,6 @@
 //#define _CG_LIMIT 1
 
 #endif // TRACETOCALL
-
-extern FILE *log_lat, *log_lat_pb;
+extern FILE *log_lat;
 
 extern void trace_to_iocall(FILE * trace, off_t startLBA);

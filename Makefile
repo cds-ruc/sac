@@ -16,10 +16,10 @@ RM = rm -rf
 OBJS = global.o main.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o paul.o most.o most_cdc.o lru_cdc.o lru_private.o hashtb_pb.o emulator_v2.o
 
 
-all: $(OBJS) smr-ssd-cache
-	@echo 'Successfully built smr-ssd-cache...'
+all: $(OBJS) sac
+	@echo 'Successfully built sac...'
 
-smr-ssd-cache:
+sac:
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -lrt -lm -o $@
 global.o: ${PAUL_SRC}/global.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
@@ -71,5 +71,5 @@ emulator_v2.o: ${PAUL_EMU}/emulator_v2.c
 
 clean:
 	$(RM) *.o
-	$(RM) $(PAUL_ROOT)/smr-ssd-cache
+	$(RM) $(PAUL_ROOT)/sac
 #	$(RMSHM)
