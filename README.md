@@ -95,9 +95,9 @@ For the typical test on SSD-SMR hybrid storage, run the this command which will 
 ./sac --cache-dev [FILE] --smr-dev [FILE] --algorithm SAC --workload 5 --workload-mode W
 ```
 
-If you need the workload running in write-only mode, you should add the option \code{--workload-mode W} which will only execute write requests in the trace file. 
+If you need the workload running in write-only mode, you should add the option `--workload-mode W` which will only execute write requests in the trace file. 
 
-There are three optional value of \code{'--workload-mode}, they are \code{W} for write-only mode, \code{R} for read-only mode, and \code{RW} for read-write mix mode. 
+There are three optional value of `--workload-mode`, they are `W` for write-only mode, `R`for read-only mode, and `RW` for read-write mix mode. 
 
 #### Example 4: Use emulator instead of SMR drive
 
