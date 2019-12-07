@@ -1,6 +1,8 @@
 # SAC: A Co-Design Cache Algorithm for Emerging SMR-based High-Density Disks
 
+SAC is a cache algorithm used in SSD-SMR hybrid storage systems. It has good performance in both read and write I / O mode. This project is a prototype of user-mode cache system used to verify the performance of different cache algorithms, in which we have 4 built-in algorithms -  SAC, LRU, MOST, MOST+CDC(a module of SAC). 
 
+Follow this instruction, you will have a quick exploration of play-with-SAC!
 
 ## Preparation
 
