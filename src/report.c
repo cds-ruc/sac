@@ -4,20 +4,20 @@
 #include "unistd.h"
 #include <stdlib.h>
 FILE* LogFile;
-void paul_info(char* format, ...)
+void sac_info(char* format, ...)
 {
     printf("process [%d]: ",getpid());
     printf(format);
 }
 
-int paul_warning(char* format, ...)
+int sac_warning(char* format, ...)
 {
     printf("process [%d], errno: %d:",getpid(), errno);
     printf(format);
     return errno;
 }
 
-void paul_error_exit(char* format, ...)
+void sac_error_exit(char* format, ...)
 {
     printf("process [%d], errno: %d:",getpid(), errno);
     printf(format);
@@ -25,13 +25,13 @@ void paul_error_exit(char* format, ...)
 }
 
 
-void paul_exit(int flag)
+void sac_exit(int flag)
 {
     exit(flag);
 }
 
 
-int paul_log(char* log, FILE* file)
+int sac_log(char* log, FILE* file)
 {
 #ifdef LOG_ALLOW
     return fwrite(log,strlen(log),1,file);

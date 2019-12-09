@@ -22,7 +22,8 @@
 
 
 #define OFF_BAND_TMP_PERSISIT   0 // The head 80MB of FIFO for temp persistence band needed to clean.
-#define OFF_FIFO                80*1024*1024
+#define OFF_PB                80*1024*1024
+#define OFF_BAND_REGION         20*1024*1000*1000 // 20GB
 
 #ifdef EMU_NO_DISK_IO
 #define DISK_READ(fd,buf,size,offset) (size)
@@ -32,15 +33,10 @@
 #define DISK_WRITE(fd,buf,size,offset) (pwrite(fd,buf,size,offset))
 #endif
 
-/* Default set by configure, fd_fifo_part and fd_smr_part is seperately a partation  of a CMR disk
- * I set the head 0 to 5G of the disk as the partition 1m for fifo, and the rest part of disk is partiton 2 for smr*/
-int  fd_fifo_part;
-int  fd_smr_part;
-
 static FIFOCtrl global_fifo_ctrl;
 static FIFODesc* fifo_desp_array;
 static char* BandBuffer;
-static blksize_t NSMRBands = 266600;		// smr band cnt = 266600; almost 8TB data size. 
+static blksize_t NSMRBands = 266600;		// smr band cnt = 266600; almost 8TB data size.
 static unsigned long BNDSZ = 40*1000*1024;      // bandsize =40MB  (20MB~40MB)
 
 
@@ -78,7 +74,7 @@ static int invalidDespInFIFO(FIFODesc* desp);
 #define isFIFOFull  ((global_fifo_ctrl.tail + 1) % (NBLOCK_SMR_PB + 1) == global_fifo_ctrl.head)
 
 static unsigned long getBandSize(off_t offset);
-static off_t getBandOffset(off_t blk_off); 
+static off_t getBandOffset(off_t blk_off);
 
 /** AIO related for blocks collected in FIFO **/
 #define max_aio_count 6000
@@ -133,7 +129,7 @@ void InitEmulator()
 
     Log_emu = fopen(Log_emu_path, "w+");
     if(Log_emu == NULL)
-        paul_error_exit("cannot open log: Log_emu.");
+        sac_error_exit("cannot open log: Log_emu.");
 }
 
 /** \brief
@@ -192,10 +188,10 @@ simu_smr_read(char *buffer, size_t size, off_t offset)
             ssd_hdr = fifo_desp_array + despId;
 
             _TimerLap(&tv_start);
-            returnCode = DISK_READ(fd_fifo_part, buffer, BLKSZ, ssd_hdr->despId * BLKSZ + OFF_FIFO);
+            returnCode = DISK_READ(smr_fd, buffer, BLKSZ, ssd_hdr->despId * BLKSZ + OFF_PB);
             if (returnCode < 0)
             {
-                printf("[ERROR] smrread():-------read from inner ssd: fd=%d, errorcode=%d, offset=%lu\n", fd_fifo_part, returnCode, ssd_hdr->despId * BLKSZ);
+                printf("[ERROR] smrread():-------read from PB: fd=%d, errorcode=%d, offset=%lu\n", smr_fd, returnCode, ssd_hdr->despId * BLKSZ);
                 exit(-1);
             }
             _TimerLap(&tv_stop);
@@ -207,10 +203,10 @@ simu_smr_read(char *buffer, size_t size, off_t offset)
             simu_n_read_smr++;
             _TimerLap(&tv_start);
 
-            returnCode = DISK_READ(fd_smr_part, buffer, BLKSZ, offset + i * BLKSZ);
+            returnCode = DISK_READ(smr_fd, buffer, BLKSZ, offset + i * BLKSZ + OFF_BAND_REGION);
             if (returnCode < 0)
             {
-                printf("[ERROR] smrread():-------read from smr disk: fd=%d, errorcode=%d, offset=%lu\n", fd_smr_part, returnCode, offset + i * BLKSZ);
+                printf("[ERROR] smrread():-------read from smr disk: fd=%d, errorcode=%d, offset=%lu\n", smr_fd, returnCode, offset + i * BLKSZ);
                 exit(-1);
             }
             _TimerLap(&tv_stop);
@@ -250,10 +246,10 @@ simu_smr_write(char *buffer, size_t size, off_t offset)
         }
 
         _TimerLap(&tv_start);
-        returnCode = DISK_WRITE(fd_fifo_part, buffer, BLKSZ, ssd_hdr->despId * BLKSZ + OFF_FIFO);
+        returnCode = DISK_WRITE(smr_fd, buffer, BLKSZ, ssd_hdr->despId * BLKSZ + OFF_PB);
         if (returnCode < 0)
         {
-            printf("[ERROR] smrwrite():-------write to smr disk: fd=%d, errorcode=%d, offset=%lu\n", fd_fifo_part, returnCode, offset + i * BLKSZ);
+            printf("[ERROR] smrwrite():-------write to smr disk: fd=%d, errorcode=%d, offset=%lu\n", smr_fd, returnCode, offset + i * BLKSZ);
             exit(-1);
         }
         _TimerLap(&tv_stop);
@@ -320,11 +316,11 @@ flushFIFO()
     /** R **/
     /* read whole band from smr to buffer*/
     _TimerLap(&tv_start);
-    returnCode = DISK_READ(fd_smr_part, BandBuffer, thisBandSize, thisBandOff);
+    returnCode = DISK_READ(smr_fd, BandBuffer, thisBandSize, thisBandOff + OFF_BAND_REGION);
     if((returnCode) != thisBandSize)
     {
         printf("[ERROR] flushFIFO():---------read from smr: fd=%d, errorcode=%d, offset=%lu\n",
-               fd_smr_part, returnCode, thisBandOff);
+               smr_fd, returnCode, thisBandOff);
         exit(-1);
     }
     _TimerLap(&tv_stop);
@@ -346,7 +342,7 @@ flushFIFO()
         long nextPos = (curDesp->despId + 1) % (NBLOCK_SMR_PB + 1);
 
         /* If the block belongs the same band with the header of fifo. */
-        if (curDesp->isValid && (curDesp->tag.offset - thisBandOff) < thisBandSize && curDesp->tag.offset >= thisBandOff) 
+        if (curDesp->isValid && (curDesp->tag.offset - thisBandOff) < thisBandSize && curDesp->tag.offset >= thisBandOff)
         {
             off_t offset_inband = curDesp->tag.offset - thisBandOff;
 #ifdef EMULATION_AIO
@@ -362,10 +358,10 @@ flushFIFO()
             aio_read_cnt++;
 #else
             _TimerLap(&tv_start);
-            returnCode = DISK_READ(fd_fifo_part, BandBuffer + offset_inband * BLKSZ, BLKSZ, curPos * BLKSZ + OFF_FIFO);
+            returnCode = DISK_READ(smr_fd, BandBuffer + offset_inband * BLKSZ, BLKSZ, curPos * BLKSZ + OFF_PB);
             if (returnCode < 0)
             {
-                printf("[ERROR] flushFIFO():-------read from PB: fd=%d, errorcode=%d, offset=%lu\n", fd_fifo_part, returnCode, curPos * BLKSZ);
+                printf("[ERROR] flushFIFO():-------read from PB: fd=%d, errorcode=%d, offset=%lu\n", smr_fd, returnCode, curPos * BLKSZ);
                 exit(-1);
             }
             _TimerLap(&tv_stop);
@@ -397,7 +393,7 @@ flushFIFO()
     {
         char log[128];
         sprintf(log,"Flush [%ld] times ERROR: AIO read list from FIFO Failure[%d].\n",simu_flush_bands+1,ret_aio);
-        paul_log(log, Log_emu);
+        sac_log(log, Log_emu);
     }
     _TimerLap(&tv_stop);
     simu_time_read_fifo += TimerInterval_SECOND(&tv_start,&tv_stop);
@@ -413,10 +409,10 @@ flushFIFO()
     _TimerLap(&tv_start);
 
     /** W **/
-    returnCode = DISK_WRITE(fd_smr_part, BandBuffer, thisBandSize, thisBandOff);
+    returnCode = DISK_WRITE(smr_fd, BandBuffer, thisBandSize, thisBandOff + OFF_BAND_REGION);
     if (returnCode < thisBandSize)
     {
-        printf("[ERROR] flushFIFO():-------write to smr: fd=%d, errorcode=%d, offset=%lu\n", fd_smr_part, returnCode, thisBandOff);
+        printf("[ERROR] flushFIFO():-------write to smr: fd=%d, errorcode=%d, offset=%lu\n", smr_fd, returnCode, thisBandOff);
         exit(-1);
     }
     _TimerLap(&tv_stop);
@@ -432,9 +428,9 @@ flushFIFO()
 
     char log[256];
     sprintf(log,"[Emulator]: RMW number:%lu, write amplifcation:%f\n",STT->n_RMW, wtrAmp);
-    paul_log(log, Log_emu);
+    sac_log(log, Log_emu);
     sprintf(log,"[Emulator]: dirty blocks in band colect=%ld, bandsize=%ld\n", dirty_n_inBand, thisBandSize/BLKSZ);
-    paul_log(log, Log_emu);
+    sac_log(log, Log_emu);
 }
 
 static unsigned long
@@ -450,7 +446,7 @@ getBandSize(off_t offset)
     }
     return 0;
 }
-static off_t  
+static off_t
 getBandOffset(off_t blk_off)
 {
     unsigned long i, size, total_size = 0;
@@ -469,14 +465,14 @@ void Emu_PrintStatistic()
     printf("----------------EMULATION------------\n");
 #ifndef EMU_NO_DISK_IO
     printf("Time:\n");
-    printf("Read FIFO:\t%lf\nWrite FIFO:\t%lf\nRead SMR:\t%lf\nFlush SMR:\t%lf\n",simu_time_read_fifo, simu_time_write_fifo, simu_time_read_smr, simu_time_write_smr);
+    printf("PB_read_blks:\t%lf\nPB_write_blks:\t%lf\nSMR_read_blks:\t%lf\nFlush SMR:\t%lf\n",simu_time_read_fifo, simu_time_write_fifo, simu_time_read_smr, simu_time_write_smr);
     printf("Total I/O:\t%lf\n", simu_time_read_fifo+simu_time_write_fifo+simu_time_read_smr+simu_time_write_smr);
     printf("FIFO Collect:\t%lf\n",simu_time_collectFIFO);
 #endif
     printf("Block/Band Count:\n");
-    printf("Read FIFO:\t%ld\nWrite FIFO:\t%ld\nFIFO Collect:\t%ld\nRead SMR:\t%ld\nFIFO Write HIT:\t%ld\n",simu_n_read_fifo, simu_n_write_fifo,simu_n_collect_fifo, simu_n_read_smr, simu_n_fifo_write_HIT);
-    printf("Read Bands:\t%ld\nFlush Bands:\t%ld\nFlush BandSize:\t%ld\n",simu_read_smr_bands, simu_flush_bands, simu_flush_band_size);
-    printf("WA AVG:\t%lf\n",(float)(simu_flush_band_size / BLKSZ) / STT->flush_hdd_blocks);
+    printf("PB_read_blks:\t%ld\nPB_write_blks:\t%ld\nGC_collect_blks:\t%ld\nSMR_read_blks:\t%ld\nPB_write_hits:\t%ld\n",simu_n_read_fifo, simu_n_write_fifo,simu_n_collect_fifo, simu_n_read_smr, simu_n_fifo_write_HIT);
+    printf("RMWs:\t%ld\nGC_bandsize(Byte):\t%ld\n", simu_flush_bands, simu_flush_band_size);
+    printf("WA_avg:\t%lf\n",(float)(simu_flush_band_size / BLKSZ) / STT->flush_hdd_blocks);
 }
 
 void Emu_ResetStatisic()

@@ -2,7 +2,7 @@
 
 #include "../statusDef.h"
 #include "../timerUtils.h"
-#include "paul.h"
+#include "sac.h"
 #include "../report.h"
 #include <math.h>
 //#define random(x) (rand()%x)
@@ -20,7 +20,7 @@ typedef struct CleanDespCtrl
 
 static blkcnt_t  ZONEBLKSZ;
 
-static Dscptr_paul*         GlobalDespArray;
+static Dscptr_sac*         GlobalDespArray;
 static ZoneCtrl_pual*       ZoneCtrl_pualArray;
 static CleanDespCtrl        CleanCtrl;
 
@@ -36,17 +36,17 @@ static long                 StampGlobal;      /* Current io sequenced number in 
 #define stamp(desp) (desp->stamp = StampGlobal ++)
 
 
-static void add2ArrayHead(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual);
-static void move2ArrayHead(Dscptr_paul* desp,ZoneCtrl_pual* ZoneCtrl_pual);
+static void add2ArrayHead(Dscptr_sac* desp, ZoneCtrl_pual* ZoneCtrl_pual);
+static void move2ArrayHead(Dscptr_sac* desp,ZoneCtrl_pual* ZoneCtrl_pual);
 
 static int start_new_cycle();
 
-static void unloadfromZone(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual);
-static void clearDesp(Dscptr_paul* desp);
-static void hit(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual);
-static void add2CleanArrayHead(Dscptr_paul* desp);
-static void unloadfromCleanArray(Dscptr_paul* desp);
-static void move2CleanArrayHead(Dscptr_paul* desp);
+static void unloadfromZone(Dscptr_sac* desp, ZoneCtrl_pual* ZoneCtrl_pual);
+static void clearDesp(Dscptr_sac* desp);
+static void hit(Dscptr_sac* desp, ZoneCtrl_pual* ZoneCtrl_pual);
+static void add2CleanArrayHead(Dscptr_sac* desp);
+static void unloadfromCleanArray(Dscptr_sac* desp);
+static void move2CleanArrayHead(Dscptr_sac* desp);
 
 /*
     Out of Date(OOD)
@@ -65,7 +65,7 @@ struct blk_cm_info
 
 
 
-/** PAUL**/
+/** SAC**/
 static double redefineOpenZones();
 static int get_FrozenOpZone_Seq();
 
@@ -112,7 +112,7 @@ Init_most_cdc()
     ZONEBLKSZ = ZONESZ / BLKSZ;
 
     CycleID = StampGlobal = Cycle_Progress = OODstamp = 0;
-    GlobalDespArray = (Dscptr_paul*) malloc(sizeof(Dscptr_paul) * NBLOCK_SSD_CACHE);
+    GlobalDespArray = (Dscptr_sac*) malloc(sizeof(Dscptr_sac) * NBLOCK_SSD_CACHE);
     ZoneCtrl_pualArray = (ZoneCtrl_pual*)  malloc(sizeof(ZoneCtrl_pual) * NZONES);
 
     NonEmptyZoneCnt = OpenZoneCnt = 0;
@@ -121,7 +121,7 @@ Init_most_cdc()
     int i = 0;
     while(i < NBLOCK_SSD_CACHE)
     {
-        Dscptr_paul* desp = GlobalDespArray + i;
+        Dscptr_sac* desp = GlobalDespArray + i;
         desp->serial_id = i;
         desp->ssd_buf_tag.offset = -1;
         desp->next = desp->pre = -1;
@@ -152,7 +152,7 @@ int
 LogIn_most_cdc(long despId, SSDBufTag tag, unsigned flag)
 {
     /* activate the decriptor */
-    Dscptr_paul* myDesp = GlobalDespArray + despId;
+    Dscptr_sac* myDesp = GlobalDespArray + despId;
     unsigned long myZoneId = getZoneNum(tag.offset);
     ZoneCtrl_pual* myZone = ZoneCtrl_pualArray + myZoneId;
     myDesp->zoneId = myZoneId;
@@ -182,7 +182,7 @@ LogIn_most_cdc(long despId, SSDBufTag tag, unsigned flag)
 int
 Hit_most_cdc(long despId, unsigned flag)
 {
-    Dscptr_paul* myDesp = GlobalDespArray + despId;
+    Dscptr_sac* myDesp = GlobalDespArray + despId;
     ZoneCtrl_pual* myZone = ZoneCtrl_pualArray + getZoneNum(myDesp->ssd_buf_tag.offset);
 
     if (IsClean(myDesp->flag) && IsDirty(flag))
@@ -237,7 +237,7 @@ LogOut_most_cdc(long * out_despid_array, int max_n_batch, enum_t_vict suggest_ty
     if(suggest_type == ENUM_B_Clean)
     {
         if(CleanCtrl.pagecnt_clean == 0 || WhoEvict_Now == EP_Dirty) // Consistency judgment
-            paul_error_exit("Illegal to evict CLEAN cache.");
+            sac_error_exit("Illegal to evict CLEAN cache.");
 
         if(WhoEvict_Now == EP_Reset)
         {
@@ -248,7 +248,7 @@ LogOut_most_cdc(long * out_despid_array, int max_n_batch, enum_t_vict suggest_ty
     else if(suggest_type == ENUM_B_Dirty)
     {
         if(STT->incache_n_dirty == 0 || WhoEvict_Now == EP_Clean )   // Consistency judgment
-            paul_error_exit("Illegal to evict DIRTY cache.");
+            sac_error_exit("Illegal to evict DIRTY cache.");
 
 
         if(WhoEvict_Now == EP_Reset){
@@ -277,12 +277,12 @@ LogOut_most_cdc(long * out_despid_array, int max_n_batch, enum_t_vict suggest_ty
         }
     }
     else
-        paul_error_exit("PAUL catched an unsupported eviction type.");
+        sac_error_exit("SAC catched an unsupported eviction type.");
 
 FLAG_EVICT_CLEAN:
     while(evict_cnt < EVICT_DITRY_GRAIN && CleanCtrl.pagecnt_clean > 0)
     {
-        Dscptr_paul * cleanDesp = GlobalDespArray + CleanCtrl.tail;
+        Dscptr_sac * cleanDesp = GlobalDespArray + CleanCtrl.tail;
         out_despid_array[evict_cnt] = cleanDesp->serial_id;
         unloadfromCleanArray(cleanDesp);
         clearDesp(cleanDesp);
@@ -300,12 +300,12 @@ FLAG_EVICT_CLEAN:
 
 FLAG_EVICT_DIRTYZONE:
     if((CurEvictZoneSeq = get_FrozenOpZone_Seq()) < 0)
-        paul_error_exit("FLAG_EVICT_DIRTYZONE error");
+        sac_error_exit("FLAG_EVICT_DIRTYZONE error");
     evictZone = ZoneCtrl_pualArray + OpenZoneSet[CurEvictZoneSeq];
 
     while(evict_cnt < EVICT_DITRY_GRAIN && evictZone->pagecnt_dirty > 0)
     {
-        Dscptr_paul* frozenDesp = GlobalDespArray + evictZone->tail;
+        Dscptr_sac* frozenDesp = GlobalDespArray + evictZone->tail;
 
         unloadfromZone(frozenDesp,evictZone);
         out_despid_array[evict_cnt] = frozenDesp->serial_id;
@@ -337,19 +337,19 @@ FLAG_EVICT_DIRTYZONE:
 static EvictPhrase_t run_cm_alpha()
 {
     if(STT->incache_n_dirty == 0 || STT->incache_n_clean == 0)
-        paul_error_exit("Illegal to run CostModel:alpha");
+        sac_error_exit("Illegal to run CostModel:alpha");
 
     /* Get number of dirty OODs. NOTICE! Have to get the dirty first and then the clean, the order cannot be reverted.*/
     int zoneid;
     if((zoneid = get_FrozenOpZone_Seq()) < 0)
         redefineOpenZones();
-    
+
     ZoneCtrl_pual* evictZone = ZoneCtrl_pualArray + OpenZoneSet[zoneid];
-    Dscptr_paul* frozenDesp = GlobalDespArray + evictZone->tail;
+    Dscptr_sac* frozenDesp = GlobalDespArray + evictZone->tail;
     unsigned long stamp_dirty = frozenDesp->stamp;
 
     /* Get number of clean OODs. NOTICE! Have to get the dirty first and then the clean, the order cannot be reverted. */
-    Dscptr_paul* cleandesp = GlobalDespArray + CleanCtrl.tail;
+    Dscptr_sac* cleandesp = GlobalDespArray + CleanCtrl.tail;
     unsigned long stamp_clean = cleandesp->stamp;
 
 
@@ -375,14 +375,14 @@ static EvictPhrase_t run_cm_alpha()
 /* Utilities for Dirty descriptors Array in each Zone*/
 
 static void
-hit(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual)
+hit(Dscptr_sac* desp, ZoneCtrl_pual* ZoneCtrl_pual)
 {
     //ZoneCtrl_pual->heat++;
     //ZoneCtrl_pual->score -= (double) 1 / (1 << desp->heat);
 }
 
 static void
-add2ArrayHead(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual)
+add2ArrayHead(Dscptr_sac* desp, ZoneCtrl_pual* ZoneCtrl_pual)
 {
     if(ZoneCtrl_pual->head < 0)
     {
@@ -392,7 +392,7 @@ add2ArrayHead(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual)
     else
     {
         //unempty
-        Dscptr_paul* headDesp = GlobalDespArray + ZoneCtrl_pual->head;
+        Dscptr_sac* headDesp = GlobalDespArray + ZoneCtrl_pual->head;
         desp->pre = -1;
         desp->next = ZoneCtrl_pual->head;
         headDesp->pre = desp->serial_id;
@@ -401,7 +401,7 @@ add2ArrayHead(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual)
 }
 
 static void
-unloadfromZone(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual)
+unloadfromZone(Dscptr_sac* desp, ZoneCtrl_pual* ZoneCtrl_pual)
 {
     if(desp->pre < 0)
     {
@@ -424,14 +424,14 @@ unloadfromZone(Dscptr_paul* desp, ZoneCtrl_pual* ZoneCtrl_pual)
 }
 
 static void
-move2ArrayHead(Dscptr_paul* desp,ZoneCtrl_pual* ZoneCtrl_pual)
+move2ArrayHead(Dscptr_sac* desp,ZoneCtrl_pual* ZoneCtrl_pual)
 {
     unloadfromZone(desp, ZoneCtrl_pual);
     add2ArrayHead(desp, ZoneCtrl_pual);
 }
 
 static void
-clearDesp(Dscptr_paul* desp)
+clearDesp(Dscptr_sac* desp)
 {
     desp->ssd_buf_tag.offset = -1;
     desp->next = desp->pre = -1;
@@ -442,7 +442,7 @@ clearDesp(Dscptr_paul* desp)
 
 /* Utilities for Global Clean Descriptors Array */
 static void
-add2CleanArrayHead(Dscptr_paul* desp)
+add2CleanArrayHead(Dscptr_sac* desp)
 {
     if(CleanCtrl.head < 0)
     {
@@ -452,7 +452,7 @@ add2CleanArrayHead(Dscptr_paul* desp)
     else
     {
         //unempty
-        Dscptr_paul* headDesp = GlobalDespArray + CleanCtrl.head;
+        Dscptr_sac* headDesp = GlobalDespArray + CleanCtrl.head;
         desp->pre = -1;
         desp->next = CleanCtrl.head;
         headDesp->pre = desp->serial_id;
@@ -461,7 +461,7 @@ add2CleanArrayHead(Dscptr_paul* desp)
 }
 
 static void
-unloadfromCleanArray(Dscptr_paul* desp)
+unloadfromCleanArray(Dscptr_sac* desp)
 {
     if(desp->pre < 0)
     {
@@ -484,7 +484,7 @@ unloadfromCleanArray(Dscptr_paul* desp)
 }
 
 static void
-move2CleanArrayHead(Dscptr_paul* desp)
+move2CleanArrayHead(Dscptr_sac* desp)
 {
     unloadfromCleanArray(desp);
     add2CleanArrayHead(desp);
@@ -505,16 +505,16 @@ qsort_zone(long start, long end)
 
     long S = ZoneSortArray[start];
     ZoneCtrl_pual* curCtrl = ZoneCtrl_pualArray + S;
-    unsigned long score = curCtrl->pagecnt_dirty; //<PAUL-alpha> curCtrl->OOD_num;
+    unsigned long score = curCtrl->pagecnt_dirty; //<SAC-alpha> curCtrl->OOD_num;
     while (i < j)
     {
-        while (!(ZoneCtrl_pualArray[ZoneSortArray[j]].pagecnt_dirty > score) && i<j)//<PAUL-alpha>
+        while (!(ZoneCtrl_pualArray[ZoneSortArray[j]].pagecnt_dirty > score) && i<j)//<SAC-alpha>
         {
             j--;
         }
         ZoneSortArray[i] = ZoneSortArray[j];
 
-        while (!(ZoneCtrl_pualArray[ZoneSortArray[i]].pagecnt_dirty < score) && i<j)//<PAUL-alpha>
+        while (!(ZoneCtrl_pualArray[ZoneSortArray[i]].pagecnt_dirty < score) && i<j)//<SAC-alpha>
         {
             i++;
         }
@@ -561,7 +561,7 @@ pause_and_score()
     */
     /* Score all zones. */
     ZoneCtrl_pual* izone;
-    Dscptr_paul* desp;
+    Dscptr_sac* desp;
     blkcnt_t n = 0;
 
 }
@@ -569,10 +569,10 @@ pause_and_score()
 
 static double redefineOpenZones()
 {
-    double cost_ret = 0; 
+    double cost_ret = 0;
     NonEmptyZoneCnt = extractNonEmptyZoneId(); // >< #ugly way.
     if(NonEmptyZoneCnt == 0)
-        paul_error_exit("There are no zone for open.");
+        sac_error_exit("There are no zone for open.");
     pause_and_score(); /** ARS (Actually Release Space) */
     qsort_zone(0,NonEmptyZoneCnt-1);
 
@@ -594,7 +594,7 @@ static double redefineOpenZones()
             OpenZoneCnt++;
         }
         else if(zone->activate_after_n_cycles > 0)
-            paul_info("PAUL FILTERS A REPEAT ZONE.");
+            sac_info("SAC FILTERS A REPEAT ZONE.");
         i++;
     }
 
@@ -616,7 +616,7 @@ get_FrozenOpZone_Seq()
             continue;
         }
 
-        Dscptr_paul* tail = GlobalDespArray + ctrl->tail;
+        Dscptr_sac* tail = GlobalDespArray + ctrl->tail;
         if(tail->stamp < frozenStamp)
         {
             frozenStamp = tail->stamp;
@@ -648,7 +648,7 @@ static double costmodel_evaDirty_alpha(struct blk_cm_info * dirty, int num){
         ood_num += dirty[i].num_OODblks;
         i++;
     }
-    
+
     return evaDirty / (ood_num + 1);
 }
 static double costmodel_evaClean_alpha(struct blk_cm_info clean){

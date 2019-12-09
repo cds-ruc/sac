@@ -16,7 +16,7 @@ FILE* TraceFile = NULL;
 long int Request_limit = -1;
 off_t StartLBA = 0;
 int Workload_Mode = IOMODE_RW; // *Default
-SSDEvictionStrategy EvictStrategy = PAUL; // *Default
+SSDEvictionStrategy EvictStrategy = SAC; // *Default
 long Cycle_Length;
 
 int NO_REAL_DISK_IO = 0;

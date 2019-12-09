@@ -47,7 +47,7 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
 
 
     if (log_lat == NULL)
-        paul_error_exit("log file open failure.");
+        sac_error_exit("log file open failure.");
 
     char action;
     off_t offset;
@@ -66,7 +66,7 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
     returnCode = posix_memalign((void**)&ssd_buffer, 1024, 16 * sizeof(char) * BLKSZ);
     if (returnCode < 0)
     {
-        paul_warning("posix memalign error\n");
+        sac_warning("posix memalign error\n");
         //free(ssd_buffer);
         exit(-1);
     }
@@ -92,7 +92,7 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
         returnCode = fscanf(trace, "%c %d %lu\n", &action, &i, &offset);
         if (returnCode < 0)
         {
-            paul_warning("error while reading trace file.");
+            sac_warning("error while reading trace file.");
             break;
         }
         if (skiprows > 0)
@@ -126,7 +126,7 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
 #ifdef LOG_IO_LAT
             io_latency = TimerInterval_SECOND(&tv_start_io, &tv_stop_io);
             sprintf(log, "%f,%c\n", io_latency, action);
-            paul_log(log, log_lat);
+            sac_log(log, log_lat);
 #endif // LOG_IO_LAT
         }
         else if (action == ACT_READ && (Workload_Mode & IOMODE_R))
@@ -141,13 +141,13 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
 #ifdef LOG_IO_LAT
             io_latency = TimerInterval_SECOND(&tv_start_io, &tv_stop_io);
             sprintf(log, "%f,%c\n", io_latency, action);
-            paul_log(log, log_lat);
+            sac_log(log, log_lat);
 #endif //LOG_IO_LAT
         }
         else if (action != ACT_READ)
         {
             printf("Trace file gets a wrong result: action = %c.\n", action);
-            paul_error_exit("Trace file gets a wrong result");
+            sac_error_exit("Trace file gets a wrong result");
         }
 #ifdef LOG_SINGLE_REQ //Legacy
         _TimerLap(&tv_req_stop);

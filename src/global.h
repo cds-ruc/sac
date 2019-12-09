@@ -69,7 +69,7 @@ struct RuntimeSTAT
 typedef enum
 {
 //   LRU,
-    PAUL,
+    SAC,
     MOST,
     MOST_CDC,
     LRU_private,

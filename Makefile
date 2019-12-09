@@ -13,7 +13,7 @@ CPPFLAGS += -I$(PAUL_ROOT) -I$(PAUL_SRC) -I$(PAUL_SRC)/smr-emulator -I$(PAUL_SRC
 
 RM = rm -rf
 #RMSHM = rm -f /dev/shm/* 
-OBJS = global.o main.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o paul.o most.o most_cdc.o lru_cdc.o lru_private.o hashtb_pb.o emulator_v2.o
+OBJS = global.o main.o report.o timerUtils.o shmlib.o hashtable_utils.o cache.o trace2call.o sac.o most.o most_cdc.o lru_private.o hashtb_pb.o emulator_v2.o
 
 
 all: $(OBJS) sac
@@ -45,7 +45,7 @@ trace2call.o: ${PAUL_SRC}/trace2call.c
 main.o: ${PAUL_SRC}/main.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
-paul.o: ${PAUL_ALG}/paul.c
+sac.o: ${PAUL_ALG}/sac.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $?
 
 most.o: ${PAUL_ALG}/most.c

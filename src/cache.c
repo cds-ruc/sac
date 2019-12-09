@@ -170,7 +170,7 @@ flushSSDBuffer(SSDBufDesp *ssd_buf_hdr)
 //    static unsigned long cnt = 0;
 //    cnt++;
 //    sprintf(log, "%ld, %d\n", cnt, msec_w_hdd);
-//    paul_log(log, log_lat_pb);
+//    sac_log(log, log_lat_pb);
 }
 
 static void flagOp(SSDBufDesp *ssd_buf_hdr, int opType)
@@ -238,8 +238,8 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, int *found, int alloc4What)
         switch (EvictStrategy)
         {
 
-        case PAUL:
-            n_evict = LogOut_PAUL(buf_despid_array, max_n_batch, suggest_type);
+        case SAC:
+            n_evict = LogOut_SAC(buf_despid_array, max_n_batch, suggest_type);
             break;
         case MOST:
             n_evict = LogOut_most(buf_despid_array, max_n_batch);
@@ -250,11 +250,8 @@ allocSSDBuf(SSDBufTag ssd_buf_tag, int *found, int alloc4What)
         case LRU_private:
             n_evict = Unload_Buf_LRU_private(buf_despid_array, max_n_batch);
             break;
-        case LRU_CDC:
-            n_evict = Unload_Buf_LRU_CDC(buf_despid_array, max_n_batch, suggest_type);
-            break;
         default:
-            paul_warning("Current cache algorithm dose not support batched process.");
+            sac_warning("Current cache algorithm dose not support batched process.");
             exit(EXIT_FAILURE);
         }
 
@@ -302,11 +299,8 @@ initStrategySSDBuffer()
     {
     case LRU_private:
         return initSSDBufferFor_LRU_private();
-    case LRU_CDC:
-        return initSSDBufferFor_LRU_CDC();
-
-    case PAUL:
-        return Init_PUAL();
+    case SAC:
+        return Init_SAC();
         //    case OLDPORE:
         //        return Init_oldpore();
     case MOST:
@@ -326,15 +320,15 @@ initStrategySSDBuffer()
 //     {
 //         //        case LRU_global:        return Unload_LRUBuf();
 //     case LRU_private:
-//         paul_warning("LRU wrong time function revoke, please use BATHCH configure.\n");
+//         sac_warning("LRU wrong time function revoke, please use BATHCH configure.\n");
 //     case LRU_CDC:
-//         paul_warning("LRU_CDC wrong time function revoke\n");
-//     case PAUL:
-//         paul_warning("PAUL wrong time function revoke\n");
+//         sac_warning("LRU_CDC wrong time function revoke\n");
+//     case SAC:
+//         sac_warning("SAC wrong time function revoke\n");
 //     case MOST:
-//         paul_warning("MOST wrong time function revoke\n");
+//         sac_warning("MOST wrong time function revoke\n");
 //     case MOST_CDC:
-//         paul_warning("MOST_CDC wrong time functioFn revoke\n");
+//         sac_warning("MOST_CDC wrong time functioFn revoke\n");
 //     }
 //     return -1;
 // }
@@ -347,10 +341,8 @@ Strategy_Desp_HitIn(SSDBufDesp *desp)
         //        case LRU_global:        return hitInLRUBuffer(desp->serial_id);
     case LRU_private:
         return hitInBuffer_LRU_private(desp->serial_id);
-    case LRU_CDC:
-        return hitInBuffer_LRU_CDC(desp->serial_id, desp->ssd_buf_flag);
-    case PAUL:
-        return Hit_PAUL(desp->serial_id, desp->ssd_buf_flag);
+    case SAC:
+        return Hit_SAC(desp->serial_id, desp->ssd_buf_flag);
     case MOST:
         return Hit_most(desp->serial_id, desp->ssd_buf_flag);
     case MOST_CDC:
@@ -366,9 +358,6 @@ Strategy_Desp_LogIn(SSDBufDesp *desp)
     switch (EvictStrategy)
     {
         //        case LRU_global:        return insertLRUBuffer(serial_id);
-    case LRU_CDC:
-        return insertBuffer_LRU_CDC(desp->serial_id, desp->ssd_buf_flag);
-
     case LRU_private:
         return insertBuffer_LRU_private(desp->serial_id);
         //        case LRU_batch:         return insertBuffer_LRU_batch(serial_id);
@@ -379,8 +368,8 @@ Strategy_Desp_LogIn(SSDBufDesp *desp)
         //        return LogInPoreBuffer_plus(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
         //    case PORE_PLUS_V2:
         //        return LogIn_poreplus_v2(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
-    case PAUL:
-        return LogIn_PAUL(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
+    case SAC:
+        return LogIn_SAC(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
         //   case OLDPORE:
         //        return LogIn_oldpore(desp->serial_id, desp->ssd_buf_tag, desp->ssd_buf_flag);
     case MOST:

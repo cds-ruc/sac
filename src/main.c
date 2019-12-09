@@ -28,7 +28,7 @@ unsigned int INIT_PROCESS = 0;
 const char *tracefile[] = {
     "./traces/src1_2.csv.req",
     "./traces/wdev_0.csv.req",
-    "./traces/hm_0.csv.req",    
+    "./traces/hm_0.csv.req",
     "./traces/mds_0.csv.req",
     "./traces/prn_0.csv.req",
     "./traces/rsrch_0.csv.req",
@@ -47,7 +47,7 @@ int analyze_opts(int argc, char **argv)
         {"cache-dev", required_argument, NULL, 'C'},  // FORCE
         {"smr-dev", required_argument, NULL, 'S'},    // FORCE
         {"no-cache", no_argument, NULL, 'N'},
-        {"use-emulator", required_argument, NULL, 'E'},
+        {"use-emulator", no_argument, NULL, 'E'},
         {"workload", required_argument, NULL, 'W'},   // FORCE
         {"workload-file", required_argument, NULL, 'T'},  // FORCE
         {"workload-mode", required_argument, NULL, 'M'},
@@ -88,14 +88,14 @@ int analyze_opts(int argc, char **argv)
                 EvictStrategy = LRU_private;
             else if (strcmp(optarg, "LRU_CDC") == 0)
                 EvictStrategy = LRU_CDC;
-            else if (strcmp(optarg, "PAUL") == 0)
-                EvictStrategy = PAUL;
+            else if (strcmp(optarg, "SAC") == 0)
+                EvictStrategy = SAC;
             else if (strcmp(optarg, "MOST") == 0)
                 EvictStrategy = MOST;
             else if (strcmp(optarg, "MOST_CDC") == 0)
                 EvictStrategy = MOST_CDC;
             else
-                paul_error_exit("No such algorithm matched: %s.", optarg);
+                sac_error_exit("No such algorithm matched: %s.", optarg);
 
 	    printf("[User Setting] Cache Algorithm: %s.\n", optarg);
             break;
@@ -116,14 +116,14 @@ int analyze_opts(int argc, char **argv)
                 printf("[9]: usr_0.csv.req\n");
                 printf("[10]: web_0.csv.req\n");
 		printf("[11]: long.req\n");
-                paul_exit(EXIT_FAILURE);
+                sac_exit(EXIT_FAILURE);
             }
 
             if ((TraceFile = fopen(tracefile[TraceID - 1], "rt")) == NULL)
             {
 
                 printf("ERROR: Failed to open the trace file: %s\n", tracefile[TraceID - 1]);
-                paul_exit(EXIT_FAILURE);
+                sac_exit(EXIT_FAILURE);
             }
 	    printf("[User Setting] Workload file path: %s\n", tracefile[TraceID - 1]);
             break;
@@ -132,31 +132,32 @@ int analyze_opts(int argc, char **argv)
             printf("[User Setting] Workload file path: %s\n", optarg);
             if ((TraceFile = fopen(optarg, "rt")) == NULL)
             {
-                paul_error_exit("ERROR: Failed to open the trace file: %s\n", optarg);
+                sac_error_exit("ERROR: Failed to open the trace file: %s\n", optarg);
             }
             break;
 
         case 'M': // workload I/O mode
             printf("[User Setting] Workload mode ");
-            if (strcmp(optarg, "r") == 0)
+            if (strcmp(optarg, "r") == 0 || strcmp(optarg, "R") == 0)
             {
                 Workload_Mode = IOMODE_R;
                 printf("[r]: read-only. \n");
             }
-            else if (strcmp(optarg, "w") == 0)
+            else if (strcmp(optarg, "w") == 0 || strcmp(optarg, "W") == 0)
             {
                 Workload_Mode = IOMODE_W;
                 printf("[w]: write-only\n");
             }
-            else if (strcmp(optarg, "rw") == 0)
+            else if (strcmp(optarg, "rw") == 0 || strcmp(optarg, "RW") == 0)
             {
                 Workload_Mode = IOMODE_RW;
                 printf("[rw]: read-write\n");
             }
-            else
+            else{
                 printf("ERROR: unrecongnizd workload mode \"%s\", please assign mode [r]: read-only, [w]: write-only or [rw]: read-write.\n",
                        optarg);
-            paul_exit(EXIT_FAILURE);
+                sac_exit(EXIT_FAILURE);
+                }
             break;
 
         case 'D': // no-real-io
@@ -167,17 +168,13 @@ int analyze_opts(int argc, char **argv)
         case 'C': // cache-dev
 	    printf("optarg 1 = %s\n",optarg);
             cache_dev_path = optarg;
-            if((cache_fd = open(cache_dev_path, O_RDWR | O_DIRECT)) < 0){
-                paul_error_exit("Unable to open CACHE device file: %s", optarg);
-            }
+
             printf("[User Setting] Cache device file: %s\n\t(You can still use ramdisk or memory fs for testing.)\n", cache_dev_path);
             break;
 
         case 'S': // SMR-dev
             smr_dev_path = optarg;
-            if((smr_fd = open(smr_dev_path, O_RDWR | O_DIRECT)) < 0){
-                paul_error_exit("Unable to open SMR device file: %s", smr_dev_path);
-            }
+
             printf("[User Setting] SMR device file: %s\n\t(You can still use conventional hard drives for testing.)\n", optarg);
             break;
         case 'c': // blkcnt of cache
@@ -202,7 +199,7 @@ int analyze_opts(int argc, char **argv)
 
         case '?':
             printf("There is an unrecognized option or option without argument: %s\n", argv[optind - 1]);
-            paul_exit(EXIT_FAILURE);
+            sac_exit(EXIT_FAILURE);
             break;
 
         default:
@@ -225,11 +222,18 @@ int analyze_opts(int argc, char **argv)
         printf("[8]: ts_0.csv.req\n");
         printf("[9]: usr_0.csv.req\n");
         printf("[10]: web_0.csv.req\n");
-        paul_exit(EXIT_FAILURE);
+        sac_exit(EXIT_FAILURE);
     }
-    if(cache_fd < 0 || smr_fd < 0){
-        paul_error_exit("No cache or SMR device specified by arg: --cache-dev and --smr-dev");
+    if(NO_REAL_DISK_IO != 1)
+    {
+        if((cache_fd = open(cache_dev_path, O_RDWR | O_DIRECT)) < 0){
+            sac_error_exit("Unable to open CACHE device file: %s", optarg);
+        }
+        if((smr_fd = open(smr_dev_path, O_RDWR | O_DIRECT)) < 0){
+            sac_error_exit("Unable to open SMR device file: %s", smr_dev_path);
+        }
     }
+
 
     Cycle_Length = NBLOCK_SMR_PB;
     /* checking user option. */
@@ -268,15 +272,6 @@ int main(int argc, char **argv)
     if (EMULATION)
     {
         /* Emulator */
-        fd_fifo_part = open(simu_smr_fifo_device, O_RDWR | O_DIRECT);
-        fd_smr_part = open(simu_smr_smr_dev_path, O_RDWR | O_DIRECT | O_FSYNC);
-        //printf("Simulator Device: fifo part=%d, smr part=%d\n", fd_fifo_part, fd_smr_part);
-        if (fd_fifo_part < 0 || fd_smr_part < 0)
-        {
-            #ifndef EMU_NO_DISK_IO
-            paul_error_exit("No emulator smr devices.");
-            #endif
-        }
         InitEmulator();
     }
 
@@ -288,8 +283,11 @@ int main(int argc, char **argv)
         Emu_PrintStatistic();
         CloseSMREmu();
     }
+    if(NO_REAL_DISK_IO)
+    {
+        close(smr_fd);
+        close(cache_fd);
+    }
 
-    close(smr_fd);
-    close(cache_fd);
     exit(EXIT_SUCCESS);
 }

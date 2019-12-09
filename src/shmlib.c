@@ -1,6 +1,6 @@
 /*
     Writed by Sun, Diansen.  <2019.12>, email: diansensun@gmail.com
-    
+
     This file provides utilities for share memory operation based on POSIX Share Memory.
     To untilize without error, you might add "-lrt" option onto the linker.
 */
@@ -28,7 +28,7 @@ void* SHM_alloc(char* shm_name, size_t len)
 
     if(ftruncate(fd,len)!=0)
     {
-        paul_warning("truncate share memory error.");
+        sac_warning("truncate share memory error.");
         return NULL;
     }
 
@@ -87,7 +87,7 @@ void SHM_mutex_lock(pthread_mutex_t* lock)
 {
     if(pthread_mutex_lock(lock) == EOWNERDEAD)
     {
-        paul_warning("will consistent mutex, please check if any process has terminated while holding this mutex.");
+        sac_warning("will consistent mutex, please check if any process has terminated while holding this mutex.");
         pthread_mutex_consistent(lock);
     }
 }
@@ -123,7 +123,7 @@ void SHM_mutex_unlock(pthread_mutex_t* lock)
 //{
 //    if(shm_unlink(GLOBAL_UNI_LOCK)<0)
 //    {
-//        paul_warning("global unlock error");
+//        sac_warning("global unlock error");
 //        exit(1);
 //    }
 //}
@@ -142,7 +142,7 @@ int SHM_lock(char* lockname)
     {
         char msg[50];
         sprintf(msg,"trying lock '%s': %d times",lockname,++n);
-        paul_info(msg);
+        sac_info(msg);
         sleep(1);
     }
     return n;
@@ -155,7 +155,7 @@ int SHM_lock_n_check(char* lockname)
     {
         char msg[50];
         sprintf(msg,"trying lock '%s': %d times",lockname,++n);
-        paul_info(msg);
+        sac_info(msg);
         sleep(1);
     }
 
