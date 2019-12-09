@@ -104,6 +104,7 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
         offset = (offset + startLBA) * BLKSZ;
         if (!isFullSSDcache && (STT->flush_clean_blocks + STT->flush_hdd_blocks) > 0)
         {
+            printf("-------------------Cache Space is Full-----------------\n");
             reportCurInfo();
             resetStatics(); // Reset the statistics of warming phrase, cuz we don't care.
             isFullSSDcache = 1;
@@ -196,6 +197,7 @@ void trace_to_iocall(FILE *trace, off_t startLBA)
 
 static void reportCurInfo()
 {
+    printf("--------------------RESULT---------------------\n");
     printf(" totalreqNum:%lu\n read_req_count: %lu\n write_req_count: %lu\n",
            STT->reqcnt_s, STT->reqcnt_r, STT->reqcnt_w);
 

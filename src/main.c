@@ -90,10 +90,11 @@ int analyze_opts(int argc, char **argv)
         {"algorithm", required_argument, NULL, 'A'},
         {"offset", required_argument, NULL, 'O'},
         {"requests", required_argument, NULL, 'R'},
+        {"help", no_argument, NULL, 'h'},
         {0, 0, 0, 0}
     };
 
-    const char *optstr = "NE:W:M:F:DC:S:T:c:p:A:O:R:";
+    const char *optstr = "NE:W:M:F:DC:S:T:c:p:A:O:R:h";
     int longIndex;
 
     while (1)
@@ -215,7 +216,7 @@ int analyze_opts(int argc, char **argv)
             if(invalid){
                 sac_error_exit("invalid cache size number %s", optarg);
             }
-            NBLOCK_SSD_CACHE = NTABLE_SSD_CACHE = n;
+            NBLOCK_SSD_CACHE = NTABLE_SSD_CACHE = n / BLKSZ;
             printf("[User Setting] Cache Size = %s, NBLOCK_SSD_CACHE = %ld.\n", optarg, NBLOCK_SSD_CACHE);
             break;
 
@@ -224,7 +225,7 @@ int analyze_opts(int argc, char **argv)
             if(invalid){
                 sac_error_exit("invalid PB size number %s", optarg);
             }
-            NBLOCK_SMR_PB = n;
+            NBLOCK_SMR_PB = n / BLKSZ;
             printf("[User Setting] PB Size = %s, NBLOCK_SMR_PB = %ld.\n", optarg, NBLOCK_SMR_PB);
             break;
 
@@ -237,6 +238,28 @@ int analyze_opts(int argc, char **argv)
             Request_limit = atol(optarg);
             printf("[User Setting] request number = %ld.\n", Request_limit);
             break;
+        case 'h':
+            printf("\
+\n\
+Usage: sac [OPTIONS] [Arguments]\n\
+\n\
+The Options include: \n\
+\t--cache-dev		Device file path of the ssd/ramdisk for cache layer. \n\
+\t--smr-dev		Device file path of the SMR drive or HDD for SMR emulator. \n\
+\t--algorithm		One of [SAC], [LRU], [MOST], [MOST_CDC]. \n\
+\t--no-cache		No cache layer, i.e. SMR only. \n\
+\t--use-emulator	Use emulator. \n\
+\t--no-real-io	No real disk I/O generated. \n\
+\t--workload		Workload number for [1~11] corresponding to different trace files, in which the [11] is the big dataset. \n\
+\t--workload-file		Or you can specofy the trace file path manually. \n\
+\t--workload-mode		Three workload mode: [R]:read-only, [W]:write-only, [RW]:read-write	RW. \n\
+\t--cache-size		Cache size: [size]{+M,G}. E.g. 32G. \n\
+\t--pb-size		SMR Persistent Buffer size: [size]{+M,G}. E.g. 600M. \n\
+\t--offset		Start LBA offset of the SMR: [size]{+M,G}. E.g. 10G. \n\
+\t--requests		Requst number you want to run: [Nunmber]. \n\
+\t--help          show this menu. \n\
+");
+            sac_exit(EXIT_SUCCESS);
 
         case '?':
             printf("There is an unrecognized option or option without argument: %s\n", argv[optind - 1]);
