@@ -111,3 +111,10 @@ We enable you to verify the SAC and other cache algorithms without a SMR drive. 
 
 Note that, if you use the option `--use-emulator` without `--no-real-io`, the program will use the HDD device specified by `--smr-dev` to execute the behavior of STL and generate the I/O. In this case, you must to specify a real HDD. 
 
+### Contact: 
+
+Author: Sun, Diansen and Chai, Yunpeng
+
+Affiliation: Renmin University of China 
+
+Email: diansensun@gmail.com
