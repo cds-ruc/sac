@@ -11,7 +11,9 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <pthread.h>
+#include <stdint.h>
 
+#include "../lib/xstrtol.h"
 #include "report.h"
 #include "shmlib.h"
 #include "global.h"
@@ -39,7 +41,38 @@ const char *tracefile[] = {
    // "./traces/production-LiveMap-Backend-4K.req", // --> not in used.
     "./traces/long.csv.req"                           // default set: cache size = 8M*blksize; persistent buffer size = 1.6M*blksize.
 };
+/* Return the value of STR, interpreted as a non-negative decimal integer,
+   optionally multiplied by various values.
+   Assign nonzero to *INVALID if STR does not represent a number in
+   this format. */
 
+static uintmax_t
+parse_integer (const char *str, int *invalid)
+{
+  uintmax_t n;
+  char *suffix;
+  enum strtol_error e = xstrtoumax (str, &suffix, 10, &n, "bcEGkKMPTwYZ0");
+
+  if (e == LONGINT_INVALID_SUFFIX_CHAR && *suffix == 'x')
+    {
+      uintmax_t multiplier = parse_integer (suffix + 1, invalid);
+
+      if (multiplier != 0 && n * multiplier / multiplier != n)
+	{
+	  *invalid = 1;
+	  return 0;
+	}
+
+      n *= multiplier;
+    }
+  else if (e != LONGINT_OK)
+    {
+      *invalid = 1;
+      return 0;
+    }
+
+  return n;
+}
 
 int analyze_opts(int argc, char **argv)
 {
@@ -52,8 +85,8 @@ int analyze_opts(int argc, char **argv)
         {"workload-file", required_argument, NULL, 'T'},  // FORCE
         {"workload-mode", required_argument, NULL, 'M'},
         {"no-real-io", no_argument, NULL, 'D'},
-        {"blkcnt-cache", required_argument, NULL, 'c'},
-        {"blkcnt-pb", required_argument, NULL, 'p'},
+        {"cache-size", required_argument, NULL, 'c'},
+        {"pb-size", required_argument, NULL, 'p'},
         {"algorithm", required_argument, NULL, 'A'},
         {"offset", required_argument, NULL, 'O'},
         {"requests", required_argument, NULL, 'R'},
@@ -71,6 +104,8 @@ int analyze_opts(int argc, char **argv)
         //printf("opt=%c,\nlongindex=%d,\nnext arg index: optind=%d,\noptarg=%s,\nopterr=%d,\noptopt=%c\n",
         //opt, longIndex, optind, optarg, opterr, optopt);
 
+        uintmax_t n = 0;
+        int invalid = 0;
         switch (opt)
         {
         case 'N': // no-cache
@@ -86,8 +121,6 @@ int analyze_opts(int argc, char **argv)
         case 'A': // algorithm
             if (strcmp(optarg, "LRU") == 0)
                 EvictStrategy = LRU_private;
-            else if (strcmp(optarg, "LRU_CDC") == 0)
-                EvictStrategy = LRU_CDC;
             else if (strcmp(optarg, "SAC") == 0)
                 EvictStrategy = SAC;
             else if (strcmp(optarg, "MOST") == 0)
@@ -178,13 +211,21 @@ int analyze_opts(int argc, char **argv)
             printf("[User Setting] SMR device file: %s\n\t(You can still use conventional hard drives for testing.)\n", optarg);
             break;
         case 'c': // blkcnt of cache
-            NBLOCK_SSD_CACHE = NTABLE_SSD_CACHE = atol(optarg);
-            printf("[User Setting] NBLOCK_SSD_CACHE = %ld.\n", NBLOCK_SSD_CACHE);
+            n = parse_integer(optarg, &invalid);
+            if(invalid){
+                sac_error_exit("invalid cache size number %s", optarg);
+            }
+            NBLOCK_SSD_CACHE = NTABLE_SSD_CACHE = n;
+            printf("[User Setting] Cache Size = %s, NBLOCK_SSD_CACHE = %ld.\n", optarg, NBLOCK_SSD_CACHE);
             break;
 
         case 'p': // blkcnt of smr's pb
-            NBLOCK_SMR_PB = atol(optarg) * (ZONESZ / BLKSZ);
-            printf("[User Setting] NBLOCK_SMR_PB = %ld.\n", NBLOCK_SMR_PB);
+            n = parse_integer(optarg, &invalid);
+            if(invalid){
+                sac_error_exit("invalid PB size number %s", optarg);
+            }
+            NBLOCK_SMR_PB = n;
+            printf("[User Setting] PB Size = %s, NBLOCK_SMR_PB = %ld.\n", optarg, NBLOCK_SMR_PB);
             break;
 
         case 'O': // offset, the started LBA of the workload.
