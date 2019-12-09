@@ -83,6 +83,14 @@ In this case, your test environment does not need to deploy the SSD and the SMR 
 
 Also, we provide other comparison cache algorithms including LRU, MOST, and MOST with CDC. Change the `--algorithm` option to test other algorithms, such as `--algorithm LRU`. 
 
+Or, you can just run the script `scripts/quicktest_compare_algorithms.sh` for a quick comparason test among LRU, MOST, SAC in write-only mode, run:
+
+```shell
+cd scripts && ./quicktest_compare_algorithms.sh
+```
+
+The outputs can be found in `logs/`. 
+
 #### Example 2: Big dataset and real disk I/O
 
 ```shell
@@ -110,6 +118,15 @@ There are three optional value of `--workload-mode`, they are `W` for write-only
 We enable you to verify the SAC and other cache algorithms without a SMR drive. With the option `--use-emulator`, the program will emulate the behavior of the STL (Shingle Translation Layer) on the regular HDD you specify. The SMR emulator module will then output the information about the I/O time, write amplification, RMW counts, etc. 
 
 Note that, if you use the option `--use-emulator` without `--no-real-io`, the program will use the HDD device specified by `--smr-dev` to execute the behavior of STL and generate the I/O. In this case, you must to specify a real HDD. 
+
+### Note!
+Before testing the real SMR drive, you need to force clean the PB area of the SMR, otherwise the remaining data will affect the performance of the next test. We provide the PB cleaning script in the project scripts/smr-pb-forceclean.sh, run 
+
+```shell 
+./smr-pb-forceclean.sh [FILE]
+```
+
+But be careful NOT to use this script in any production environment, it will overwrite the data of the `[FILE]`. 
 
 ### Contact: 
 
