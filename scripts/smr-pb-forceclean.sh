@@ -1,12 +1,19 @@
 #!/bin/bash
 
 TEST_DEV=$1
-TYPE=$2
-BS=$3
-COUNT=$4
 
-if [ ${TYPE} = "fulldisk" ]; then
-    echo "fulldisk cleanning..."
+type fio > /dev/null 2>&1
+CMD_FIO=$?
+
+
+if [ $CMD_FIO -ne 0 ]; then 
+    echo -e "error: No 'fio' command detected, please ensure you have installed the fio tool and add it into PATH.\n"
+    exit
+fi
+
+if [ -a "${TEST_DEV}" ]; then
+
+    echo "PB cleanning..."
     echo "force cleaning smr PB, fdev=${TEST_DEV}"
     #STEP 1. random write 4KB * 250K = 1GB data with target LAB range of 0~8GB.
 #        to make sure smr PB has RMW all the old data, and PB now is full with the (0~8)GB data. 
@@ -16,15 +23,7 @@ if [ ${TYPE} = "fulldisk" ]; then
 
     dd if=/dev/zero of=${TEST_DEV} bs=4K count=2M
     sync
-
-elif [ ${TYPE} = "manual" ]; then
-    echo "Manual cleanning..."
-    dd if=/dev/zero of=${TEST_DEV} bs=${BS} count=${COUNT}
-    sync
-else
-    echo "set the clean scale, 'fulldisk' or 'manual <blksize> <count>?'" 
-fi 
-
 echo "PB cleaned up!"
-
-
+else
+    echo -e "error: File <${TEST_DEV}> doesn't exist. Please specify the file path of SMR dev by: ./smr-pb-forceclean.sh [FILE].\n"
+fi
