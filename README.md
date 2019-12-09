@@ -123,10 +123,10 @@ Note that, if you use the option `--use-emulator` without `--no-real-io`, the pr
 Before testing the real SMR drive, you need to force clean the PB area of the SMR, otherwise the remaining data will affect the performance of the next test. We provide the PB cleaning script in the project scripts/smr-pb-forceclean.sh, run 
 
 ```shell 
-./smr-pb-forceclean.sh [FILE]
+./smr-pb-forceclean.sh [SMR FILE]
 ```
 
-But be careful NOT to use this script in any production environment, it will overwrite the data of the `[FILE]`. 
+But be careful NOT to use this script in any production environment, it will overwrite the data of the `[SMR FILE]`. 
 
 ### Contact: 
 
