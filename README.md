@@ -38,7 +38,7 @@ make
 
 ### DataSet
 
-You have to download the trace files as workloads needed by the program. The trace files are available on the Google Drive, [Click here](https://drive.google.com/drive/folders/1zwZYwGB9PbuqAs3wlIE4cpIrYkdgUtYB). Put all the trace files into the project directory ``traces/``. (If the link fails, ju÷st let us know by Email: diansensun@gmail.com. )
+You have to download the trace files as workloads needed by the program. The trace files are available on the Google Drive, [Click here](https://drive.google.com/drive/folders/1zwZYwGB9PbuqAs3wlIE4cpIrYkdgUtYB). Put all the trace files into the project directory ``traces/``. (If the link fails, just let us know by Email: diansensun@gmail.com. )
 
 
 
@@ -73,9 +73,9 @@ Before the test, you need to ensure that the SSD and SMR device files are presen
 #### Example 1: Quick Run!
 
 ```shell
-./sac --algorithm SAC --workload 5 --use-emulator --no-real-io
-./sac --algorithm LRU --workload 5 --use-emulator --no-real-io
-./sac --algorithm MOST --workload 5 --use-emulator --no-real-io
+./sac --algorithm SAC --workload 11 --use-emulator --no-real-io
+./sac --algorithm LRU --workload 11 --use-emulator --no-real-io
+./sac --algorithm MOST --workload 11 --use-emulator --no-real-io
 ```
 
 This command let you quickly verify and compare the effectiveness of a cache algorithm, and its performance will be reflected from the results of the SMR emulator where the most critical indicator is RMW trigger count. Note that, this command will not generate the real disk I/O due to the option `--no-real-io` which discards the request before it is sent to the device, while the metadata structure of the cache algorithm and emulator still running in memory. 
