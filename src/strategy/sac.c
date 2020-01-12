@@ -98,7 +98,7 @@ static struct COSTMODEL_Alpha CM_Alpha = {
 static EvictPhrase_t run_cm_alpha();
 
 
-static volatile unsigned long
+static unsigned long
 getZoneNum(size_t offset)
 {
     return offset / ZONESZ;
@@ -338,7 +338,8 @@ static EvictPhrase_t run_cm_alpha()
     if(STT->incache_n_dirty == 0 || STT->incache_n_clean == 0)
         sac_error_exit("Illegal to run CostModel:alpha");
 
-    struct blk_cm_info blk_cm_info_drt={0,0}, blk_cm_info_cln={0,0};
+    //struct blk_cm_info blk_cm_info_drt={0,0};
+    struct blk_cm_info blk_cm_info_cln={0,0};
     double cost_drt = -1, cost_cln = -1;
 
     /* Get number of dirty OODs. NOTICE! Have to get the dirty first and then the clean, the order cannot be reverted.*/
@@ -515,7 +516,7 @@ qsort_zone(long start, long end)
 
     long S = ZoneSortArray[start];
     ZoneCtrl_pual* curCtrl = ZoneCtrl_pualArray + S;
-    unsigned long score = curCtrl->OOD_num;
+    int score = curCtrl->OOD_num;
     while (i < j)
     {
         while (!(ZoneCtrl_pualArray[ZoneSortArray[j]].OOD_num > score) && i<j)

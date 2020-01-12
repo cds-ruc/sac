@@ -169,7 +169,7 @@ simu_smr_read(char *buffer, size_t size, off_t offset)
     pthread_mutex_lock(&simu_smr_fifo_mutex);
     DespTag		tag;
     FIFODesc    *ssd_hdr;
-    long		i;
+    size_t		i;
     int	        returnCode;
     long		ssd_hash;
     long		despId;
@@ -224,7 +224,7 @@ simu_smr_write(char *buffer, size_t size, off_t offset)
     pthread_mutex_lock(&simu_smr_fifo_mutex);
     DespTag		tag;
     FIFODesc        *ssd_hdr;
-    long		i;
+    size_t		i;
     int		returnCode = 0;
     long		ssd_hash;
     static struct timeval	tv_start,tv_stop;
@@ -344,8 +344,8 @@ flushFIFO()
         /* If the block belongs the same band with the header of fifo. */
         if (curDesp->isValid && (curDesp->tag.offset - thisBandOff) < thisBandSize && curDesp->tag.offset >= thisBandOff)
         {
-            off_t offset_inband = curDesp->tag.offset - thisBandOff;
 #ifdef EMULATION_AIO
+            off_t offset_inband = curDesp->tag.offset - thisBandOff;
             static int aio_read_cnt = 0;
 
             struct aiocb* aio_n = aiolist + aio_read_cnt;
@@ -358,7 +358,7 @@ flushFIFO()
             aio_read_cnt++;
 #else
             _TimerLap(&tv_start);
-            returnCode = DISK_READ(smr_fd, BandBuffer + offset_inband * BLKSZ, BLKSZ, curPos * BLKSZ + OFF_PB);
+            returnCode = DISK_READ(smr_fd, BandBuffer + (curDesp->tag.offset - thisBandOff) * BLKSZ, BLKSZ, curPos * BLKSZ + OFF_PB); //ff_t offset_inband = curDesp->tag.offset - thisBandOff;
             if (returnCode < 0)
             {
                 printf("[ERROR] flushFIFO():-------read from PB: fd=%d, errorcode=%d, offset=%lu\n", smr_fd, returnCode, curPos * BLKSZ);
@@ -449,7 +449,7 @@ getBandSize(off_t offset)
 static off_t
 getBandOffset(off_t blk_off)
 {
-    unsigned long i, size, total_size = 0;
+    long i, size, total_size = 0;
     for (i = 0; i < band_size_num; i++)
     {
         size = BNDSZ / 2 + i * 1024000;

@@ -9,7 +9,7 @@ SAC_EMU=${SAC_SRC}/smr-emulator
 
 endif
 
-CFLAGS += -Wall -pthread
+CFLAGS += -W -pthread
 CPPFLAGS += -I$(SAC_ROOT) -I$(SAC_SRC) -I$(SAC_SRC)/smr-emulator -I$(SAC_SRC)/strategy -I$(SAC_LIB)
 
 RM = rm -rf

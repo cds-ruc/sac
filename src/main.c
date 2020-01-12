@@ -20,7 +20,6 @@
 #include "cache.h"
 #include "smr-emulator/emulator_v2.h"
 #include "trace2call.h"
-#include "daemon.h"
 #include "timerUtils.h"
 
 int analyze_opts(int argc, char **argv);

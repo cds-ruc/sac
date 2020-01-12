@@ -99,7 +99,7 @@ static struct COSTMODEL_Alpha CM_Alpha = {
 static EvictPhrase_t run_cm_alpha();
 
 
-static volatile unsigned long
+static unsigned long
 getZoneNum(size_t offset)
 {
     return offset / ZONESZ;
@@ -505,7 +505,7 @@ qsort_zone(long start, long end)
 
     long S = ZoneSortArray[start];
     ZoneCtrl_pual* curCtrl = ZoneCtrl_pualArray + S;
-    unsigned long score = curCtrl->pagecnt_dirty; //<SAC-alpha> curCtrl->OOD_num;
+    int score = curCtrl->pagecnt_dirty; //<SAC-alpha> curCtrl->OOD_num;
     while (i < j)
     {
         while (!(ZoneCtrl_pualArray[ZoneSortArray[j]].pagecnt_dirty > score) && i<j)//<SAC-alpha>
@@ -560,9 +560,9 @@ pause_and_score()
         But it doesn't matter because of only 200~500K meta data of zones in memory for searching, it's not a big number.
     */
     /* Score all zones. */
-    ZoneCtrl_pual* izone;
-    Dscptr_sac* desp;
-    blkcnt_t n = 0;
+//    ZoneCtrl_pual* izone;
+//    Dscptr_sac* desp;
+//    blkcnt_t n = 0;
 
 }
 
@@ -581,7 +581,7 @@ static double redefineOpenZones()
         max_n_zones = 1;  // This is for Emulation on small traces, some of their fifo size are lower than a zone size.
 
     OpenZoneCnt = 0;
-    long i = 0, k = 0;
+    long i = 0;
     while(OpenZoneCnt < max_n_zones && i < NonEmptyZoneCnt)
     {
         ZoneCtrl_pual* zone = ZoneCtrl_pualArray + ZoneSortArray[i];

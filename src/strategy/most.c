@@ -46,7 +46,7 @@ static int redefineOpenZones();
 static ZoneCtrl *getEvictZone();
 static long stamp(Dscptr *desp);
 
-static volatile unsigned long
+static unsigned long
 getZoneNum(size_t offset)
 {
     return offset / ZONESZ;
@@ -252,7 +252,7 @@ qsort_zone(long start, long end)
 
     long S = ZoneSortArray[start];
     ZoneCtrl *curCtrl = ZoneCtrlArray + S;
-    long sWeight = curCtrl->score;
+    unsigned long sWeight = curCtrl->score;
     while (i < j)
     {
         while (!(ZoneCtrlArray[ZoneSortArray[j]].score > sWeight) && i < j)
@@ -292,7 +292,7 @@ extractNonEmptyZoneId()
     return cnt;
 }
 
-static volatile void
+static void
 pause_and_caculate_weight_sizedivhot()
 {
     int n = 0;

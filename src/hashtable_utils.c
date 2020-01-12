@@ -32,7 +32,7 @@ int HashTab_Init()
 
     SSDBufHashBucket* bucket = ssd_buf_hashtable;
     SSDBufHashBucket* freebucket = hashitem_freelist;
-    size_t i = 0;
+    blksize_t i = 0;
     for(i = 0; i < NBLOCK_SSD_CACHE; bucket++, freebucket++, i++)
     {
         bucket->desp_serial_id = freebucket->desp_serial_id = -1;
