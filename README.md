@@ -56,7 +56,7 @@ Before the test, you need to ensure that the SSD and SMR device files are presen
 | ----------------- | --------- | ------------------------------------------------------------ | ------- |
 | `--cache-dev`     | ✅         | Device file path of the ssd/ramdisk for cache layer.         | NULL    |
 | `--smr-dev`       | ✅         | Device file path of the SMR drive or HDD for SMR emulator.   | NULL    |
-| `--algorithm`     | ✅         | One of [SAC], [LRU], [MOST], [MOST+DC]                       | SAC     |
+| `--algorithm`     | ✅         | One of [SAC], [LRU], [MOST], [MOST+CDC]                       | SAC     |
 | `--no-cache`      | ❌         |                                                              |         |
 | `--use-emulator`  | ❌         |                                                              |         |
 | `--no-real-io`    | ❌         |                                                              |         |
