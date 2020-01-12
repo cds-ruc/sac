@@ -67,7 +67,7 @@ Before the test, you need to ensure that the SSD and SMR device files are presen
 | `--pb-size`       | ✅         | SMR Persistent Buffer size: [size]{+M,G}. E.g. 600M          | 600MB   |
 | `--offset`        | ✅         | Start LBA offset of the SMR: [size]{+M,G}. E.g. 1G           | 0       |
 | `--requests`      | ✅         | Requst number you want to run: [Nunmber].                    | -1      |
-
+| `--help`          | ✅         | Show Help Manual.                    |       |
 ### Examples
 
 #### Example 1: Quick Run!
